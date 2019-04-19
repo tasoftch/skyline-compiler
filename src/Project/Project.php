@@ -36,6 +36,7 @@ namespace Skyline\Compiler\Project;
 
 
 use Skyline\Compiler\Exception\FileOrDirectoryNotFoundException;
+use Skyline\Compiler\Project\Attribute\AttributeCollection;
 use Skyline\Compiler\Project\Attribute\AttributeInterface;
 
 abstract class Project implements ProjectInterface
@@ -64,7 +65,10 @@ abstract class Project implements ProjectInterface
             throw $e;
         }
         $this->publicDirectory = $publicDirectory;
-        $this->attributes = $attributes;
+        $this->attributes = new AttributeCollection("<ROOT>");
+
+        if($attributes)
+            $this->attributes->setAttributes($attributes);
     }
 
 
@@ -98,5 +102,14 @@ abstract class Project implements ProjectInterface
     public function getAttribute(string $attributeName): AttributeInterface
     {
         return $this->attributes[$attributeName] ?? NULL;
+    }
+
+    /**
+     * Gets the attributes collection
+     *
+     * @return AttributeCollection|null
+     */
+    public function getAttributes(): ?AttributeCollection {
+        return $this->attributes;
     }
 }
