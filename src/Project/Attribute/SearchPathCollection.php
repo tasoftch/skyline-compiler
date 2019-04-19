@@ -35,13 +35,23 @@
 namespace Skyline\Compiler\Project\Attribute;
 
 
-class SearchPathAttribute extends Attribute
+class SearchPathCollection extends Attribute
 {
+    private $searchPaths = [];
+
     /**
-     * Use this constants as search path names
+     * @param SearchPathAttribute $searchPathAttribute
      */
-    const SEARCH_PATH_VENDOR = 'vendor';
-    const SEARCH_PATH_USER_CONFIG = 'config';
-    const SEARCH_PATH_USER_MODULES = 'modules';
-    const SEARCH_PATH_CLASSES = 'classes';
+    public function addSearchPath(SearchPathAttribute $searchPathAttribute) {
+        $name = $searchPathAttribute->getName();
+        $this->searchPaths[$name][] = $searchPathAttribute;
+    }
+
+    /**
+     * @param string $type
+     * @return SearchPathAttribute[]|null
+     */
+    public function getSearchPaths(string $type) {
+        return $this->searchPaths[$type] ?? NULL;
+    }
 }

@@ -35,6 +35,7 @@
 namespace Skyline\Compiler\Project\Loader;
 
 
+use Generator;
 use Skyline\Compiler\Exception\ProjectLoaderException;
 use SimpleXMLElement;
 
@@ -86,6 +87,36 @@ class XML extends AbstractFileLoader
         $this->XML = $xml;
     }
 
+    /**
+     * @inheritDoc
+     */
+    protected function yieldAttributes(): Generator
+    {
+        if($attributes = $this->XML->attributes->attr) {
+            foreach($attributes as $attr) {
+                $name = (string)$attr["name"];
+                $value = self::getXMLElementValue($attr);
+
+                yield $name => $value;
+            }
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function yieldSearchPaths(): Generator
+    {
+        if($searchPaths = $this->XML->searchPaths->dir) {
+            foreach($searchPaths as $path) {
+                $type = (string)$path["type"];
+                $value = (string)$path;
+
+                yield $type => $value;
+            }
+        }
+    }
+
 
 
     /**
@@ -95,14 +126,17 @@ class XML extends AbstractFileLoader
      * @param \SimpleXMLElement $element
      * @return bool|float|int|string|array
      */
-    public static function getXMLElementValue(SimpleXMLElement $element) {
-        $normalize = function(SimpleXMLElement $element) use (&$normalize) {
+    public static function getXMLElementValue(SimpleXMLElement $element, string $forceType = NULL, bool $forceAll = false) {
+        $normalize = function(SimpleXMLElement $element, $forced) use (&$normalize, $forceAll) {
             $type = (string) ($element['type'] ?? 'string');
+            if($forced)
+                $type = $forced;
+
             if($type == 'list') {
                 $list = [];
                 foreach($element->children() as $child) {
                     $key = (string)$child["key"];
-                    $value = $normalize($child);
+                    $value = $normalize($child, $forceAll ? $forced : "");
 
                     if($key)
                         $list[$key] = $value;
@@ -122,6 +156,6 @@ class XML extends AbstractFileLoader
             return $value;
         };
 
-        return $normalize($element);
+        return $normalize($element, $forceType);
     }
 }

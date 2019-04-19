@@ -35,7 +35,13 @@
 namespace Skyline\Compiler\Project\Loader;
 
 
+use Generator;
 use Skyline\Compiler\Exception\BadConfigurationException;
+use Skyline\Compiler\Project\Attribute\Attribute;
+use Skyline\Compiler\Project\Attribute\AttributeCollection;
+use Skyline\Compiler\Project\Attribute\AttributeInterface;
+use Skyline\Compiler\Project\Attribute\SearchPathAttribute;
+use Skyline\Compiler\Project\Attribute\SearchPathCollection;
 use Skyline\Compiler\Project\MutableProjectInterface;
 use Skyline\Compiler\Project\ProjectInterface;
 use TASoft\Service\ConfigurableServiceInterface;
@@ -94,11 +100,37 @@ abstract class AbstractLoader extends AbstractContainer implements ConfigurableS
         $project = $this->getServiceManager()->makeServiceInstance($projClass, $arguments);
         if($project instanceof MutableProjectInterface) {
 
+            foreach($this->yieldAttributes() as $name => $attr) {
+                if($attr instanceof AttributeInterface) {
+                    $project->setAttribute($attr);
+                }
+                elseif(is_array($attr)) {
+                    $col = new AttributeCollection($name);
+                    $col->setAttributes($attr);
+                    $project->setAttribute($col);
+                } else {
+                    $project->setAttribute(new Attribute($name, $attr));
+                }
+            }
+
+            $searchPathCollection = NULL;
+            foreach($this->yieldSearchPaths() as $type => $searchPath) {
+
+                if(!($searchPath instanceof AttributeInterface)) {
+                    $searchPath = new SearchPathAttribute($type, $searchPath);
+                }
+
+                if(!$searchPathCollection)
+                    $searchPathCollection = new SearchPathCollection(AttributeInterface::SEARCH_PATHS_ATTR_NAME);
+                $searchPathCollection->addSearchPath($searchPath);
+            }
+
+            if($searchPathCollection)
+                $project->setAttribute($searchPathCollection);
         } else {
             throw new BadConfigurationException("Instantiated project is not mutable");
         }
 
-        $this->loadDidComplete();
         return $project;
     }
 
@@ -124,4 +156,16 @@ abstract class AbstractLoader extends AbstractContainer implements ConfigurableS
      * @return array|null
      */
     abstract protected function getConstructorArguments(): ?array;
+
+    /**
+     * Yields all attributes
+     * @return Generator
+     */
+    abstract protected function yieldAttributes(): Generator;
+
+    /**
+     * Yields all search paths
+     * @return Generator
+     */
+    abstract protected function yieldSearchPaths(): Generator;
 }

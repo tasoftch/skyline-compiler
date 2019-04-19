@@ -51,6 +51,14 @@ class AttributeCollection extends Attribute implements AttributeCollectionInterf
     }
 
     /**
+     * @param string $name
+     * @return AttributeInterface|null
+     */
+    public function getAttribute(string $name): ?AttributeInterface {
+        return $this->attributes[$name] ?? NULL;
+    }
+
+    /**
      * Adds an attribute to the list
      * Existing attributes are replaced.
      *

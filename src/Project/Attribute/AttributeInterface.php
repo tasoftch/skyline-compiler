@@ -39,6 +39,7 @@ interface AttributeInterface
 {
     const TITLE_ATTR_NAME = 'title';
     const DESCRIPTION_ATTR_NAME = 'description';
+    const SEARCH_PATHS_ATTR_NAME = 'searchPaths';
 
     /**
      * @return string
