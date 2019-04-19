@@ -32,52 +32,18 @@
  *
  */
 
-namespace Skyline\Compiler\Project\Loader;
+namespace Skyline\Compiler\Project;
 
 
-use Skyline\Compiler\Exception\FileOrDirectoryNotFoundException;
+use Skyline\Compiler\Project\Attribute\AttributeInterface;
 
-abstract class AbstractFileLoader extends AbstractLoader
+interface MutableProjectInterface extends ProjectInterface
 {
-    /** @var string */
-    private $filename;
-
-    public function __construct(string $filename)
-    {
-        if(!is_file($filename)) {
-            $e = new FileOrDirectoryNotFoundException("File %s not found", 0, NULL, basename($filename));
-            $e->setFilename($filename);
-            throw $e;
-        }
-        $this->filename = $filename;
-    }
-
     /**
-     * @return string
+     * Marks a project as mutable
+     *
+     * @param AttributeInterface $attribute
+     * @return void
      */
-    public function getFilename(): string
-    {
-        return $this->filename;
-    }
-
-    /**
-     * Return the project root
-     * @return string
-     */
-    abstract protected function getProjectRootDirectory(): string;
-
-    /**
-     * @inheritDoc
-     */
-    protected function getProjectDirectory(): string
-    {
-        $projectDirectory = $this->getProjectRootDirectory();
-
-        if($projectDirectory && $projectDirectory[0] != '/') {
-            $projectDirectory = realpath(dirname($this->getFilename() ) . "/$projectDirectory");
-        } else {
-            $projectDirectory = realpath($projectDirectory);
-        }
-        return $projectDirectory;
-    }
+    public function setAttribute(AttributeInterface $attribute);
 }

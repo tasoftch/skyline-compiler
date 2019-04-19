@@ -35,13 +35,45 @@
 namespace Skyline\Compiler\Project\Loader;
 
 
-use Skyline\Compiler\Exception\BadConfigurationException;
 use Skyline\Compiler\Exception\ProjectLoaderException;
 use SimpleXMLElement;
 
 class XML extends AbstractFileLoader
 {
-    protected function loadInstance()
+    private $XML;
+
+    /**
+     * @inheritDoc
+     */
+    protected function getProjectRootDirectory(): string
+    {
+        return (string) $this->XML->directory;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function getProjectInstanceClass(): string
+    {
+        return (string) $this->XML['class'];
+    }
+
+    protected function getConstructorArguments(): ?array
+    {
+        $arguments = [];
+        if($args = $this->XML->arguments->arg) {
+            foreach($args as $arg) {
+                $arguments[] = $this->getXMLElementValue($arg);
+            }
+        }
+        return $arguments;
+    }
+
+
+    /**
+     * @inheritDoc
+     */
+    protected function loadDidBegin()
     {
         libxml_clear_errors();
         $xml = @simplexml_load_file($this->getFilename());
@@ -51,25 +83,10 @@ class XML extends AbstractFileLoader
             $e->setLoader($this);
             throw $e;
         }
-
-        $className = (string) $xml['class'];
-        if(!$className) {
-            throw new BadConfigurationException("XML Project <project> must contain a class attribute");
-        }
-
-        $projDir = (string) $xml->directory;
-        if($projDir[0] != '/') {
-            $projDir = realpath(dirname($this->getFilename() ) . "/$projDir");
-        } else {
-            $projDir = realpath($projDir);
-        }
-
-        if(!$projDir) {
-            throw new BadConfigurationException("XML Project <project> must contain an element called <directory> specifying a valid project directory. Can be absolute or relative to the config file");
-        }
-
-
+        $this->XML = $xml;
     }
+
+
 
     /**
      * Unpacks an XML element into a value <... type="string|int|bool|float|list">....</...>

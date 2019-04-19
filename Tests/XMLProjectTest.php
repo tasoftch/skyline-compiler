@@ -32,52 +32,31 @@
  *
  */
 
-namespace Skyline\Compiler\Project\Loader;
+/**
+ * XMLProjectTest.php
+ * skyline-compiler
+ *
+ * Created on 2019-04-19 17:27 by thomas
+ */
 
+use PHPUnit\Framework\TestCase;
+use Skyline\Compiler\Project\Loader\XML;
 
-use Skyline\Compiler\Exception\FileOrDirectoryNotFoundException;
-
-abstract class AbstractFileLoader extends AbstractLoader
+class XMLProjectTest extends TestCase
 {
-    /** @var string */
-    private $filename;
-
-    public function __construct(string $filename)
-    {
-        if(!is_file($filename)) {
-            $e = new FileOrDirectoryNotFoundException("File %s not found", 0, NULL, basename($filename));
-            $e->setFilename($filename);
-            throw $e;
-        }
-        $this->filename = $filename;
+    /**
+     * @expectedException Skyline\Compiler\Exception\BadConfigurationException
+     */
+    public function testProjectWithoutClass() {
+        $xml = new XML(__DIR__ . "/Projects/class-less-project.xml");
+        $xml->getProject();
     }
 
     /**
-     * @return string
+     * @expectedException Skyline\Compiler\Exception\BadConfigurationException
      */
-    public function getFilename(): string
-    {
-        return $this->filename;
-    }
-
-    /**
-     * Return the project root
-     * @return string
-     */
-    abstract protected function getProjectRootDirectory(): string;
-
-    /**
-     * @inheritDoc
-     */
-    protected function getProjectDirectory(): string
-    {
-        $projectDirectory = $this->getProjectRootDirectory();
-
-        if($projectDirectory && $projectDirectory[0] != '/') {
-            $projectDirectory = realpath(dirname($this->getFilename() ) . "/$projectDirectory");
-        } else {
-            $projectDirectory = realpath($projectDirectory);
-        }
-        return $projectDirectory;
+    public function testProjectWithoutRoot() {
+        $xml = new XML(__DIR__ . "/Projects/root-less-project.xml");
+        $xml->getProject();
     }
 }

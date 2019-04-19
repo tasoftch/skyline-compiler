@@ -35,9 +35,12 @@
 namespace Skyline\Compiler\Project\Loader;
 
 
+use Skyline\Compiler\Exception\BadConfigurationException;
+use Skyline\Compiler\Project\MutableProjectInterface;
 use Skyline\Compiler\Project\ProjectInterface;
 use TASoft\Service\ConfigurableServiceInterface;
 use TASoft\Service\Container\AbstractContainer;
+use TASoft\Service\ServiceManager;
 
 abstract class AbstractLoader extends AbstractContainer implements ConfigurableServiceInterface, LoaderInterface
 {
@@ -68,4 +71,56 @@ abstract class AbstractLoader extends AbstractContainer implements ConfigurableS
         $proj = $this->getInstance();
         return $proj;
     }
+
+    /**
+     * @inheritDoc
+     */
+    protected function loadInstance()
+    {
+        $this->loadDidBegin();
+        $projClass = $this->getProjectInstanceClass();
+        if(!$projClass) {
+            throw new BadConfigurationException("XML Project <project> must contain a class attribute");
+        }
+
+        $projectDirectory = $this->getProjectDirectory();
+        if(!is_dir($projectDirectory)) {
+            throw new BadConfigurationException("XML Project <project> must contain an element called <directory> specifying a valid project directory. Can be absolute or relative to the config file");
+        }
+
+        $arguments = $this->getConstructorArguments();
+        array_unshift($arguments, $projectDirectory);
+
+        $project = $this->getServiceManager()->makeServiceInstance($projClass, $arguments);
+        if($project instanceof MutableProjectInterface) {
+
+        } else {
+            throw new BadConfigurationException("Instantiated project is not mutable");
+        }
+
+        $this->loadDidComplete();
+    }
+
+    protected function getServiceManager(): ServiceManager {
+        return ServiceManager::generalServiceManager([]);
+    }
+
+    protected function loadDidBegin() {}
+    protected function loadDidComplete() {}
+
+    /**
+     * @return string
+     */
+    abstract protected function getProjectDirectory(): string;
+
+    /**
+     * @return string
+     */
+    abstract protected function getProjectInstanceClass(): string;
+
+    /**
+     *
+     * @return array|null
+     */
+    abstract protected function getConstructorArguments(): ?array;
 }

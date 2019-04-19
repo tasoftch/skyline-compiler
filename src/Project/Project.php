@@ -39,7 +39,7 @@ use Skyline\Compiler\Exception\FileOrDirectoryNotFoundException;
 use Skyline\Compiler\Project\Attribute\AttributeCollection;
 use Skyline\Compiler\Project\Attribute\AttributeInterface;
 
-abstract class Project implements ProjectInterface
+class Project implements ProjectInterface, MutableProjectInterface
 {
     protected $rootDirectory;
     protected $publicDirectory;
@@ -99,5 +99,13 @@ abstract class Project implements ProjectInterface
      */
     public function getAttributes(): ?AttributeCollection {
         return $this->attributes;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setAttribute(AttributeInterface $attribute)
+    {
+        $this->attributes->addAttribute($attribute);
     }
 }
