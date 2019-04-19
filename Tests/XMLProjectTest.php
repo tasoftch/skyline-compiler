@@ -63,13 +63,22 @@ class XMLProjectTest extends TestCase
 
     public function testProjectWithArguments() {
         $xml = new XML(__DIR__ . "/Projects/arguments-project.xml");
-        $xml->getProject();
+        /** @var MyProject $proj */
+        $proj = $xml->getProject();
+        $this->assertInstanceOf(MyProject::class, $proj);
+
+        $this->assertEquals([getcwd(), 'PublicFolder', [45, "Hello World"]], $proj->arguments);
     }
+
+
 }
 
 class MyProject extends Project {
+    public $arguments;
+
     public function __construct(string $rootDirectory = NULL, string $publicDirectory = NULL, array $attributes = NULL)
     {
         parent::__construct($rootDirectory, $publicDirectory, $attributes);
+        $this->arguments = func_get_args();
     }
 }
