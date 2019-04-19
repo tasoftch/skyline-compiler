@@ -35,7 +35,81 @@
 namespace Skyline\Compiler;
 
 
-class AbstractMainCompiler
-{
+use Skyline\Compiler\Context\CompilerContext;
+use Skyline\Compiler\Project\ProjectInterface;
+use TASoft\Config\Config;
 
+abstract class AbstractMainCompiler
+{
+    /** @var ProjectInterface */
+    private $project;
+    /** @var Config */
+    private $configuration;
+
+    /**
+     * @var CompilerContext
+     */
+    private $context;
+
+    /**
+     * @return ProjectInterface
+     */
+    public function getProject(): ProjectInterface
+    {
+        return $this->project;
+    }
+
+    /**
+     * @param ProjectInterface $project
+     */
+    public function setProject(ProjectInterface $project): void
+    {
+        $this->project = $project;
+    }
+
+    public function getSkylineAppDataDirectory() {
+        $config = $this->getConfiguration();
+
+        $skylineTarget = $config["SkylineAppDataDirectory"] ?? 'SkylineAppData';
+        $projDir = $this->getProject()->getProjectRootDirectory();
+        return "$projDir/$skylineTarget/";
+    }
+
+    protected function getConfiguration(): Config {
+        if(!$this->configuration) {
+            $cfg = new Config( $this->getCoreConfiguration() );
+            $main = new Config($this->getMainConfiguration());
+            $main->merge($cfg);
+            $this->configuration = $main;
+        }
+        return $this->configuration;
+    }
+
+    abstract protected function getCoreConfiguration(): array;
+
+    protected function getMainConfiguration(): array {
+        return [
+
+        ];
+    }
+
+    /**
+     * @return CompilerContext
+     */
+    public function getContext(): CompilerContext
+    {
+        if(!$this->context) {
+            $this->setContext(new CompilerContext() );
+        }
+        return $this->context;
+    }
+
+    /**
+     * @param CompilerContext $context
+     */
+    public function setContext(CompilerContext $context): void
+    {
+        $this->context = $context;
+        $this->context->setMainCompiler($this);
+    }
 }
