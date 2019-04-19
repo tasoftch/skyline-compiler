@@ -41,11 +41,9 @@ use Skyline\Compiler\Project\Attribute\AttributeInterface;
 
 abstract class Project implements ProjectInterface
 {
-    /** @var string[][] */
-    protected $searchPaths;
-
     protected $rootDirectory;
     protected $publicDirectory;
+
     protected $attributes;
 
     /**
@@ -55,9 +53,8 @@ abstract class Project implements ProjectInterface
      * @param $publicDirectory
      * @param $attributes
      */
-    public function __construct(string $rootDirectory = NULL, string $publicDirectory = NULL, array $searchPaths = NULL, array $attributes = NULL)
+    public function __construct(string $rootDirectory = NULL, string $publicDirectory = NULL, array $attributes = NULL)
     {
-        $this->searchPaths = $searchPaths;
         $this->rootDirectory = $rootDirectory === NULL ? getcwd() : $rootDirectory;
         if(!is_dir($this->rootDirectory)) {
             $e = new FileOrDirectoryNotFoundException("Directory %s does not exist", 0, NULL, basename($rootDirectory));
@@ -69,15 +66,6 @@ abstract class Project implements ProjectInterface
 
         if($attributes)
             $this->attributes->setAttributes($attributes);
-    }
-
-
-    /**
-     * @inheritDoc
-     */
-    public function getSearchPaths(string $searchPathName): ?array
-    {
-        return $this->searchPaths[$searchPathName] ?? NULL;
     }
 
     /**

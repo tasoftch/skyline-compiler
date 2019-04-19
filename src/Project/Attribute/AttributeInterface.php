@@ -37,6 +37,9 @@ namespace Skyline\Compiler\Project\Attribute;
 
 interface AttributeInterface
 {
+    const TITLE_ATTR_NAME = 'title';
+    const DESCRIPTION_ATTR_NAME = 'description';
+
     /**
      * @return string
      */
