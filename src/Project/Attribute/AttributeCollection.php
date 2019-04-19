@@ -68,7 +68,19 @@ class AttributeCollection extends Attribute implements AttributeCollectionInterf
      * @param array $attributes
      */
     public function setAttributes(array $attributes) {
-        $this->attributes = $attributes;
+        foreach($attributes as $key => $attribute) {
+            if(!($attribute instanceof AttributeInterface)) {
+                if(is_array($attribute)) {
+                    $attr = new AttributeCollection($key);
+                    $attr->setAttributes($attribute);
+                    $attribute = $attr;
+                } else {
+                    $attribute = new Attribute($key, $attribute);
+                }
+            }
+
+            $this->attributes[ $attribute->getName() ] = $attribute;
+        }
     }
 
     /**

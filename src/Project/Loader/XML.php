@@ -61,7 +61,7 @@ class XML extends AbstractFileLoader
     protected function getConstructorArguments(): ?array
     {
         $arguments = [];
-        if($args = $this->XML->arguments->arg) {
+        if($args = $this->XML->argument) {
             foreach($args as $arg) {
                 $arguments[] = $this->getXMLElementValue($arg);
             }

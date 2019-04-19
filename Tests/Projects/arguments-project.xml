@@ -31,6 +31,10 @@
   ~ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   ~
   -->
-<project class="Skyline\Compiler\Project\Project">
-    <directory>../sdfkj</directory>
+<project class="MyProject">
+    <argument>PublicFolder</argument>
+    <argument type="list">
+        <item type="int">45</item>
+        <item type="string">Hello World</item>
+    </argument>
 </project>

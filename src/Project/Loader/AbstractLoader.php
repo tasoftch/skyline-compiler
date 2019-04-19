@@ -99,6 +99,7 @@ abstract class AbstractLoader extends AbstractContainer implements ConfigurableS
         }
 
         $this->loadDidComplete();
+        return $project;
     }
 
     protected function getServiceManager(): ServiceManager {

@@ -41,6 +41,7 @@
 
 use PHPUnit\Framework\TestCase;
 use Skyline\Compiler\Project\Loader\XML;
+use Skyline\Compiler\Project\Project;
 
 class XMLProjectTest extends TestCase
 {
@@ -58,5 +59,17 @@ class XMLProjectTest extends TestCase
     public function testProjectWithoutRoot() {
         $xml = new XML(__DIR__ . "/Projects/root-less-project.xml");
         $xml->getProject();
+    }
+
+    public function testProjectWithArguments() {
+        $xml = new XML(__DIR__ . "/Projects/arguments-project.xml");
+        $xml->getProject();
+    }
+}
+
+class MyProject extends Project {
+    public function __construct(string $rootDirectory = NULL, string $publicDirectory = NULL, array $attributes = NULL)
+    {
+        parent::__construct($rootDirectory, $publicDirectory, $attributes);
     }
 }
