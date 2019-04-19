@@ -34,8 +34,8 @@
 
 namespace Skyline\Compiler;
 
-
 use Skyline\Compiler\Context\CompilerContext;
+use Skyline\Compiler\Exception\CompilerException;
 use Skyline\Compiler\Project\ProjectInterface;
 use TASoft\Config\Config;
 
@@ -111,5 +111,22 @@ abstract class AbstractMainCompiler
     {
         $this->context = $context;
         $this->context->setMainCompiler($this);
+    }
+
+
+    public function compile() {
+        $config = $this->getConfiguration();
+        if(!$this->getProject()) {
+            if(isset($config['project']) && ($proj = $config['project']) instanceof ProjectInterface) {
+                $this->setProject($proj);
+            } else {
+                $e = new CompilerException("Can not compile without project");
+                throw $e;
+            }
+        }
+
+        $domains = new Config([]);
+
+
     }
 }
