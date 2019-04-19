@@ -1,6 +1,7 @@
 {
   "name": "skyline/compiler",
   "license": "BSD-3-Clause",
+  "description": "The compiler package allows you to manually edit the source files and compile them to a bootable structure, so any Skyline CMS application is able to deliver the website from that compilation.",
   "authors": [
     {
       "name": "Thomas Abplanalp",
