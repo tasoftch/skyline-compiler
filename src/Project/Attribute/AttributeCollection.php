@@ -34,23 +34,48 @@
 
 namespace Skyline\Compiler\Project\Attribute;
 
-
+/**
+ * Class AttributeCollection
+ * @package Skyline\Compiler\Project\Attribute
+ */
 class AttributeCollection extends Attribute implements AttributeCollectionInterface
 {
     private $attributes = [];
+
+    /**
+     * @return AttributeInterface[]
+     */
     public function getAttributes(): array
     {
         return $this->attributes;
     }
 
+    /**
+     * Adds an attribute to the list
+     * Existing attributes are replaced.
+     *
+     * @param AttributeInterface $attribute
+     */
     public function addAttribute(AttributeInterface $attribute) {
+        if(isset($this->attributes[$attribute->getName()]))
+            trigger_error("Attribute " . $attribute->getName() . " already exists", E_USER_NOTICE);
+
         $this->attributes[ $attribute->getName() ] = $attribute;
     }
 
+    /**
+     * Set new attributes
+     * @param array $attributes
+     */
     public function setAttributes(array $attributes) {
         $this->attributes = $attributes;
     }
 
+    /**
+     * Removes an attribute from collection
+     *
+     * @param string $attributeName
+     */
     public function removeAttribute(string $attributeName) {
         if(isset($this->attributes[$attributeName]))
             unset($this->attributes[$attributeName]);
