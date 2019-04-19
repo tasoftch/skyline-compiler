@@ -36,15 +36,16 @@ namespace Skyline\Compiler\Project;
 
 
 use Skyline\Compiler\Exception\FileOrDirectoryNotFoundException;
+use Skyline\Compiler\Project\Attribute\AttributeInterface;
 
-abstract class AbstractProject implements ProjectInterface
+abstract class Project implements ProjectInterface
 {
     /** @var string[][] */
-    private $searchPaths;
+    protected $searchPaths;
 
-    private $rootDirectory;
-    private $publicDirectory;
-    private $attributes;
+    protected $rootDirectory;
+    protected $publicDirectory;
+    protected $attributes;
 
     /**
      * AbstractProject constructor.
@@ -94,7 +95,7 @@ abstract class AbstractProject implements ProjectInterface
     /**
      * @inheritDoc
      */
-    public function getAttribute(string $attributeName)
+    public function getAttribute(string $attributeName): AttributeInterface
     {
         return $this->attributes[$attributeName] ?? NULL;
     }

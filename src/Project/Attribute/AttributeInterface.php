@@ -32,46 +32,18 @@
  *
  */
 
-namespace Skyline\Compiler\Project;
+namespace Skyline\Compiler\Project\Attribute;
 
 
-use Skyline\Compiler\Project\Attribute\AttributeInterface;
-
-interface ProjectInterface
+interface AttributeInterface
 {
-    const SEARCH_PATH_VENDOR = 'vendor';
-    const SEARCH_PATH_USER_CONFIG = 'config';
-    const SEARCH_PATH_USER_MODULES = 'modules';
-    const SEARCH_PATH_CLASSES = 'classes';
-
     /**
-     * Returns the root directory of the project
      * @return string
      */
-    public function getProjectRootDirectory(): string;
+    public function getName(): string;
 
     /**
-     * Returns the public directory of the project.
-     * This is where the public files will be distributed.
-     *
-     * @return string
-     */
-    public function getProjectPublicDirectory(): string;
-
-    /**
-     * Gets the attribute of the project
-     *
-     * @param string $attributeName
      * @return mixed
      */
-    public function getAttribute(string $attributeName): ?AttributeInterface;
-
-    /**
-     * Gets the search paths of the project
-     *
-     * @param string $searchPathName
-     * @return array|null
-     * @see ProjectInterface::SEARCH_PATH_* constants
-     */
-    public function getSearchPaths(string $searchPathName): ?array;
+    public function getValue();
 }
