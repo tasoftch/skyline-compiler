@@ -32,10 +32,19 @@
  *
  */
 
-namespace Skyline\Compiler;
+namespace Skyline\Compiler\SubCompiler;
 
-
-class AbstractCoreCompiler
+/**
+ * Interface SubCompilerFactoryInterface to create subcompilers
+ *
+ * @package Skyline\Compiler\SubCompiler
+ */
+interface SubCompilerFactoryInterface
 {
-
+    /**
+     * Creates and returns the sub compilers needed for the process
+     *
+     * @return SubCompilerInterface[]
+     */
+    public function getCompilerInstances(): array;
 }
