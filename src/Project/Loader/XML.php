@@ -38,6 +38,9 @@ namespace Skyline\Compiler\Project\Loader;
 use Generator;
 use Skyline\Compiler\Exception\ProjectLoaderException;
 use SimpleXMLElement;
+use Skyline\Compiler\Project\Attribute\Attribute;
+use Skyline\Compiler\Project\Attribute\FilterAttribute;
+use Skyline\Compiler\Project\Attribute\FilterConditionAttribute;
 
 class XML extends AbstractFileLoader
 {
@@ -117,6 +120,94 @@ class XML extends AbstractFileLoader
         }
     }
 
+    /**
+     * @inheritDoc
+     */
+    protected function yieldCrossOriginResourceSharingHosts(): Generator
+    {
+        if($hosts = $this->XML->CORS->host) {
+
+            foreach($hosts as $host) {
+                $name = (string)$host["name"];
+                $accepts = [];
+                foreach($host->accepts as $acc) {
+                    $accepts[] = (string) $acc;
+                }
+
+                yield new Attribute($name, $accepts);
+            }
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function yieldWhitelistAccess(): Generator
+    {
+        if($whitelist = $this->XML->whitelist->ip) {
+            foreach ($whitelist as $white) {
+                yield (string)$white;
+            }
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function yieldFilters(): Generator
+    {
+        if($filterList = $this->XML->filter) {
+            $filters = [];
+            /** @var SimpleXMLElement $filter */
+            foreach ($filterList as $filter) {
+                $action = "";
+                if($redir = $filter["redirect"] ?? NULL)
+                    $action = "header(\"Location: $redir\")";
+
+                if(!$action) {
+                    trigger_error("Filter does not provide a known action", E_USER_NOTICE);
+                    continue;
+                }
+
+                $filters[] = $FILTER = new FilterAttribute('redirect', $action);
+                $conds = [];
+
+                $concat = " || ";
+                if(strtolower($filter["operator"]) == 'and')
+                    $concat = " && ";
+
+                $FILTER->setConditionConcat($concat);
+
+                foreach ($filter->children() as $child) {
+                    $bank = $child["bank"] ?? "_SERVER";
+                    $name = $child->getName();
+
+
+                    $cond = new FilterConditionAttribute($name, (string) $child, $bank);
+
+                    $mods = explode(" ", $child["mode"]);
+                    $modifiers = 0;
+                    foreach($mods as $mod) {
+                        if($mod) {
+                            switch (strtolower($mod)) {
+                                case "not":
+                                    $modifiers |= FilterConditionAttribute::NOT_MODIFIER;
+                                    break;
+                                default:
+                                    trigger_error("Unknown modifier $mod", E_USER_NOTICE);
+                            }
+                        }
+                    }
+
+                    $cond->setModifier($modifiers);
+                    $conds[] = $cond;
+                }
+
+                $FILTER->setConditions($conds);
+                yield $FILTER;
+            }
+        }
+    }
 
 
     /**

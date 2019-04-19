@@ -40,6 +40,7 @@ use Skyline\Compiler\Exception\BadConfigurationException;
 use Skyline\Compiler\Project\Attribute\Attribute;
 use Skyline\Compiler\Project\Attribute\AttributeCollection;
 use Skyline\Compiler\Project\Attribute\AttributeInterface;
+use Skyline\Compiler\Project\Attribute\FilterAttribute;
 use Skyline\Compiler\Project\Attribute\SearchPathAttribute;
 use Skyline\Compiler\Project\Attribute\SearchPathCollection;
 use Skyline\Compiler\Project\MutableProjectInterface;
@@ -127,6 +128,36 @@ abstract class AbstractLoader extends AbstractContainer implements ConfigurableS
 
             if($searchPathCollection)
                 $project->setAttribute($searchPathCollection);
+
+            $cors = NULL;
+            foreach($this->yieldCrossOriginResourceSharingHosts() as $name => $host) {
+                if(!($host instanceof AttributeInterface))
+                    $host = new Attribute($name, $host);
+
+                if(!$cors)
+                    $cors = new AttributeCollection(AttributeInterface::HOSTS_ATTR_NAME);
+
+                $cors->addAttribute($host);
+            }
+
+            if($cors)
+                $project->setAttribute($cors);
+
+            $wl = new AttributeCollection(AttributeInterface::WHITELIST_ATTR_NAME);
+
+            foreach($this->yieldWhitelistAccess() as $idx => $whitelist) {
+                $wl->addAttribute(new Attribute($idx, $whitelist));
+            }
+
+            $project->setAttribute($wl);
+
+            $fl = new AttributeCollection(AttributeInterface::FILTER_ATTR_NAME);
+            foreach ($this->yieldFilters() as $idx => $filter) {
+                if($filter instanceof FilterAttribute) {
+                    $fl->addAttribute($filter);
+                }
+            }
+            $project->setAttribute($fl);
         } else {
             throw new BadConfigurationException("Instantiated project is not mutable");
         }
@@ -168,4 +199,30 @@ abstract class AbstractLoader extends AbstractContainer implements ConfigurableS
      * @return Generator
      */
     abstract protected function yieldSearchPaths(): Generator;
+
+    /**
+     * Yields all cross origin hosts and hotlink protected hosts as well.
+     * @return Generator
+     */
+    abstract protected function yieldCrossOriginResourceSharingHosts(): Generator;
+
+    /**
+     * Yields all whitelist accesses
+     * @return Generator
+     */
+    abstract protected function yieldWhitelistAccess(): Generator;
+
+    /**
+     * Yields all filters
+     * @return Generator
+     */
+    abstract protected function yieldFilters(): Generator;
+
+    /**
+     * Finally passes the project to this method to adjust final settings
+     *
+     * @param MutableProjectInterface $mutableProject
+     */
+    protected function completeProject(MutableProjectInterface $mutableProject) {
+    }
 }

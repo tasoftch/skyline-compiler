@@ -40,6 +40,9 @@ interface AttributeInterface
     const TITLE_ATTR_NAME = 'title';
     const DESCRIPTION_ATTR_NAME = 'description';
     const SEARCH_PATHS_ATTR_NAME = 'searchPaths';
+    const HOSTS_ATTR_NAME = 'hosts';
+    const WHITELIST_ATTR_NAME = 'whitelist';
+    const FILTER_ATTR_NAME = 'filters';
 
     /**
      * @return string
