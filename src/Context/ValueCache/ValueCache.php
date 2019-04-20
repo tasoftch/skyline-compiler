@@ -32,29 +32,67 @@
  *
  */
 
-namespace Skyline\Compiler\Context;
+namespace Skyline\Compiler\Context\ValueCache;
 
 
-class OutputLogger implements LoggerInterface
+use TASoft\Config\Config;
+
+class ValueCache implements ValueCacheInterface
 {
-    public function logText($message, $verbosity = self::VERBOSITY_NORMAL, $context = NULL, ...$args)
+    private $cache;
+
+    /**
+     * ValueCache constructor.
+     * @param Config|NULL $cache
+     */
+    public function __construct(Config $cache = NULL)
     {
-        printf($message, ...$args);
+        $this->cache = $cache ?: new Config([]);
     }
 
-    public function logNotice($message, $context = NULL, ...$args)
+    /**
+     * @inheritDoc
+     */
+    public function postValue($value, string $name, string $domain = "")
     {
-        printf($message, ...$args);
+        $dom = $this->_getDomain($domain);
+        $dom[$name] = $value;
     }
 
-    public function logWarning($message, $context = NULL, ...$args)
+    /**
+     * @inheritDoc
+     */
+    public function fetchValue(string $name, string $domain = "")
     {
-        printf($message, ...$args);
+        $dom = $this->_getDomain($domain);
+        return $dom[$name] ?? NULL;
     }
 
-    public function logError($message, $context = NULL, ...$args)
+    /**
+     * @inheritDoc
+     */
+    public function fetchValues(string $domain = "")
     {
-        printf($message, ...$args);
+        /** @var Config $dom */
+        $dom = $this->_getDomain($domain);
+        return $dom->getValues();
     }
 
+
+    /**
+     * @param $domain
+     * @return mixed|null
+     * @internal
+     */
+    private function _getDomain($domain) {
+        if(!$domain) {
+            if(!isset($this->cache['__tasoft_null_domain']))
+                $this->cache['__tasoft_null_domain'] = new Config([]);
+            return $this->cache['__tasoft_null_domain'];
+        }
+
+        if(!isset($this->cache[$domain]))
+            $this->cache[$domain] = new Config([]);
+        return $this->cache[$domain];
+    }
 }

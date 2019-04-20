@@ -32,54 +32,29 @@
  *
  */
 
-namespace Skyline\Compiler\Context;
+namespace Skyline\Compiler\Context\Logger;
 
 
-use Skyline\Compiler\AbstractMainCompiler;
-use Skyline\Compiler\Context\Logger\LoggerInterface;
-use Skyline\Compiler\Context\Logger\OutputLogger;
-
-class CompilerContext
+class OutputLogger implements LoggerInterface
 {
-    /** @var AbstractMainCompiler */
-    private $mainCompiler;
-
-    /** @var LoggerInterface */
-    private $logger;
-
-    /**
-     * @return AbstractMainCompiler
-     */
-    public function getMainCompiler(): AbstractMainCompiler
+    public function logText($message, $verbosity = self::VERBOSITY_NORMAL, $context = NULL, ...$args)
     {
-        return $this->mainCompiler;
+        printf($message, ...$args);
     }
 
-    /**
-     * @param AbstractMainCompiler $mainCompiler
-     */
-    public function setMainCompiler(AbstractMainCompiler $mainCompiler): void
+    public function logNotice($message, $context = NULL, ...$args)
     {
-        $this->mainCompiler = $mainCompiler;
+        printf($message, ...$args);
     }
 
-    /**
-     * @return LoggerInterface
-     */
-    public function getLogger(): LoggerInterface
+    public function logWarning($message, $context = NULL, ...$args)
     {
-        if(!$this->logger)
-            $this->logger = new OutputLogger();
-        return $this->logger;
+        printf($message, ...$args);
     }
 
-    /**
-     * @param LoggerInterface $logger
-     */
-    public function setLogger(LoggerInterface $logger): void
+    public function logError($message, $context = NULL, ...$args)
     {
-        $this->logger = $logger;
+        printf($message, ...$args);
     }
-
 
 }

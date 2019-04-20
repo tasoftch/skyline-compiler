@@ -32,54 +32,33 @@
  *
  */
 
-namespace Skyline\Compiler\Context;
+namespace Skyline\Compiler\Context\ValueCache;
 
-
-use Skyline\Compiler\AbstractMainCompiler;
-use Skyline\Compiler\Context\Logger\LoggerInterface;
-use Skyline\Compiler\Context\Logger\OutputLogger;
-
-class CompilerContext
+interface ValueCacheInterface
 {
-    /** @var AbstractMainCompiler */
-    private $mainCompiler;
-
-    /** @var LoggerInterface */
-    private $logger;
+    /**
+     * Posts a value into public domain
+     *
+     * @param $value
+     * @param string $name
+     * @param string $domain
+     */
+    public function postValue($value, string $name, string $domain = "");
 
     /**
-     * @return AbstractMainCompiler
+     * Fetches a value from public domain
+     *
+     * @param string $name
+     * @param string $domain
+     * @return mixed|null
      */
-    public function getMainCompiler(): AbstractMainCompiler
-    {
-        return $this->mainCompiler;
-    }
+    public function fetchValue(string $name, string $domain = "");
 
     /**
-     * @param AbstractMainCompiler $mainCompiler
+     * Fetches all values inside a domain
+     *
+     * @param string $domain
+     * @return array
      */
-    public function setMainCompiler(AbstractMainCompiler $mainCompiler): void
-    {
-        $this->mainCompiler = $mainCompiler;
-    }
-
-    /**
-     * @return LoggerInterface
-     */
-    public function getLogger(): LoggerInterface
-    {
-        if(!$this->logger)
-            $this->logger = new OutputLogger();
-        return $this->logger;
-    }
-
-    /**
-     * @param LoggerInterface $logger
-     */
-    public function setLogger(LoggerInterface $logger): void
-    {
-        $this->logger = $logger;
-    }
-
-
+    public function fetchValues(string $domain = "");
 }

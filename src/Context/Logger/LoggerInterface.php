@@ -32,7 +32,7 @@
  *
  */
 
-namespace Skyline\Compiler\Context;
+namespace Skyline\Compiler\Context\Logger;
 
 
 interface LoggerInterface

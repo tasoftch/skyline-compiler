@@ -70,7 +70,7 @@ class XMLProjectTest extends TestCase
         $this->assertEquals([getcwd(), 'PublicFolder', [45, "Hello World"]], $proj->arguments);
     }
 
-    public function testFullProject() {
+    public function te_stFullProject() {
         $xml = new XML(__DIR__ . "/Projects/project.xml");
         /** @var MyProject $proj */
         $proj = $xml->getProject();
