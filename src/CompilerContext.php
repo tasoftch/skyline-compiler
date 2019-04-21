@@ -34,6 +34,7 @@
 
 namespace Skyline\Compiler;
 
+use Iterator;
 use Skyline\Compiler\CompilerConfiguration as CC;
 use Skyline\Compiler\Context\FileCache\FileCacheInterface;
 use Skyline\Compiler\Context\FileCache\LocalFileCache;
@@ -44,6 +45,7 @@ use Skyline\Compiler\Context\ValueCache\ValueCacheInterface;
 use Skyline\Compiler\Exception\CompilerException;
 use Skyline\Compiler\Project\ProjectInterface;
 use Skyline\Kernel\Service\Error\AbstractErrorHandlerService;
+use TASoft\Collection\DependencyCollection;
 use TASoft\Config\Config;
 use Throwable;
 
@@ -177,6 +179,31 @@ class CompilerContext
         $this->configuration = $configuration;
     }
 
+    /**
+     * Resolves the compilers against their dependencies and creates an iterator
+     *
+     * @return Iterator
+     * @internal
+     */
+    private function getOrganizedCompilersIterator(): Iterator {
+        $depCollection = new DependencyCollection(false);
+
+        $add = function(CompilerInterface $compiler) use ($depCollection) {
+
+        };
+
+        foreach($this->compilers as $compiler) {
+            if($compiler instanceof CompilerInterface)
+                $add($compiler);
+            elseif($compiler instanceof CompilerFactoryInterface) {
+                foreach($compiler->getCompilerInstances() as $cmp)
+                    $add($cmp);
+            }
+        }
+
+        return $depCollection->getIterator();
+    }
+
     public function compile() {
         if(!($project = $this->getProject())) {
             $project = CC::get($this->getConfiguration(), CC::COMPILER_PROJECT);
@@ -194,8 +221,10 @@ class CompilerContext
                 }
             });
 
-
-
+            /** @var CompilerInterface $compiler */
+            foreach($this->getOrganizedCompilersIterator() as $compiler) {
+                $compiler->compile($this);
+            }
         } catch (Throwable $throwable) {
             $this->getLogger()->logException($throwable);
         } finally {

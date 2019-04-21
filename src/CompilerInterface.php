@@ -34,9 +34,6 @@
 
 namespace Skyline\Compiler;
 
-
-use Skyline\Compiler\Context\CompilerContext;
-
 interface CompilerInterface
 {
     /**
