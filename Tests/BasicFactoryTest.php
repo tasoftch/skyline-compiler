@@ -40,6 +40,7 @@
  */
 
 use PHPUnit\Framework\TestCase;
+use Skyline\Compiler\Context\Logger\SilentLogger;
 use Skyline\Compiler\Project\ProjectInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Skyline\Compiler\CompilerContext;
@@ -55,7 +56,7 @@ class BasicFactoryTest extends TestCase
     {
         parent::tearDownAfterClass();
         $fs = new Filesystem();
-        $fs->remove(self::$project->getProjectRootDirectory());
+        $fs->remove(self::$project->getProjectRootDirectory() . "/SkylineAppData");
     }
 
     public static function setUpBeforeClass()
@@ -67,10 +68,19 @@ class BasicFactoryTest extends TestCase
     }
 
     public function testFactory() {
-
         $ctx = new CompilerContext(self::$project);
+        $ctx->setLogger($logger = new SilentLogger());
 
         $ctx->addCompiler(new BasicCompilersFactory());
         $ctx->compile();
+
+        $dappData = self::$project->getProjectRootDirectory() . "/SkylineAppData/";
+
+        $this->assertDirectoryExists($dappData);
+        $this->assertDirectoryExists("$dappData/Classes");
+        $this->assertDirectoryExists("$dappData/Compiled");
+        $this->assertDirectoryExists("$dappData/Config");
+
+        $this->assertFileExists("$dappData/Compiled/composer-packages.php");
     }
 }

@@ -58,6 +58,9 @@ class BasicCompilersFactory extends AbstractExtendedCompilerFactory
                 self::COMPILER_CLASS_KEY => ComposerPackagesOrderCompiler::class,
                 self::COMPILER_ARGUMENTS_KEY => [
                     'rootComposerDirectory' => './'
+                ],
+                self::COMPILER_DEPENDENCIES_KEY => [
+                    'create-directories'
                 ]
             ]
         ];

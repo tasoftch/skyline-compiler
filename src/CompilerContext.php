@@ -227,10 +227,10 @@ class CompilerContext
     /**
      * Resolves the compilers against their dependencies and creates an iterator
      *
-     * @return Iterator
+     * @return array
      * @internal
      */
-    private function getOrganizedCompilersIterator(): Iterator {
+    private function getOrganizedCompilersIterator() {
         $depCollection = new DependencyCollection(false);
         $depCollection->setAcceptsDuplicates(false);
 
@@ -248,7 +248,7 @@ class CompilerContext
             }
         }
 
-        return $depCollection->getIterator();
+        return $depCollection->getOrderedElements();
     }
 
     /**

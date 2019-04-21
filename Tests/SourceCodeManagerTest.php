@@ -54,10 +54,9 @@ class SourceCodeManagerTest extends TestCase
 
         $ctx->setSourceCodeManager(new TestsExcludingSourceCodeManager($ctx));
 
-        $gen = $ctx->getSourceCodeManager()->yieldSourceFiles('/\.php/i');
+        $gen = $ctx->getSourceCodeManager()->yieldSourceFiles('/^AbstractContaineredCollection\.php$/i');
         foreach ($gen as $name => $file) {
-            echo "*** $name => ";
-            print_r($file);
+           $this->assertEquals("vendor/tasoft/collection/src/AbstractContaineredCollection.php", $name);
         }
     }
 }

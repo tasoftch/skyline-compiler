@@ -32,46 +32,55 @@
  *
  */
 
-/**
- * ComposerPackageOrdererTest.php
- * skyline-compiler
- *
- * Created on 2019-04-21 23:05 by thomas
- */
+namespace Skyline\Compiler\Context\Logger;
 
-use PHPUnit\Framework\TestCase;
-use Skyline\Compiler\CompilerContext;
-use Skyline\Compiler\Predef\ComposerPackagesOrderCompiler;
-use Skyline\Compiler\Project\Loader\XML;
 
-class ComposerPackageOrdererTest extends TestCase
+use Throwable;
+
+class SilentLogger implements LoggerInterface
 {
-    public function testPackageOrder() {
-        $compiler = new ComposerPackagesOrderCompiler('id', "./", false);
+    private $records = [];
 
-        $xml = new XML(__DIR__ . "/Projects/project.xml");
-        /** @var MyProject $proj */
-        $proj = $xml->getProject();
-        $ctx = new CompilerContext($proj);
+    public function logText($message, $verbosity = self::VERBOSITY_NORMAL, $context = NULL, ...$args)
+    {
+        $record = func_get_args();
+        array_unshift($record, "Text");
+        $this->records[] = $record;
+    }
 
-        $compiler->compile($ctx);
+    public function logNotice($message, $context = NULL, ...$args)
+    {
+        $record = func_get_args();
+        array_unshift($record, "Notice");
+        $this->records[] = $record;
+    }
 
-        $packages = $ctx->getValueCache()->fetchValue(ComposerPackagesOrderCompiler::CACHE_PACKAGES_NAME);
-        $names = array_keys($packages);
+    public function logWarning($message, $context = NULL, ...$args)
+    {
+        $record = func_get_args();
+        array_unshift($record, "Warning");
+        $this->records[] = $record;
+    }
 
-        $idx1 = array_search("tasoft/collection", $names);
-        $idx2 = array_search("tasoft/service-manager", $names);
-        $idx3 = array_search("tasoft/config", $names);
-        $idx4 = array_search("tasoft/dependency-injection", $names);
-        $idx5 = array_search("skyline/kernel", $names);
-        $idx6 = array_search("symfony/filesystem", $names);
-        $idx7 = array_search("skyline/compiler", $names);
+    public function logError($message, $context = NULL, ...$args)
+    {
+        $record = func_get_args();
+        array_unshift($record, "Error");
+        $this->records[] = $record;
+    }
 
-        $this->assertLessThan($idx2, $idx1);
-        $this->assertLessThan($idx3, $idx2);
-        $this->assertLessThan($idx4, $idx3);
-        $this->assertLessThan($idx5, $idx4);
-        $this->assertLessThan($idx6, $idx5);
-        $this->assertLessThan($idx7, $idx6);
+    public function logException(Throwable $exception)
+    {
+        $record = func_get_args();
+        array_unshift($record, "Exception");
+        $this->records[] = $record;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRecords(): array
+    {
+        return $this->records;
     }
 }
