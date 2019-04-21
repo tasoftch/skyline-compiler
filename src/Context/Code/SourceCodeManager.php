@@ -42,15 +42,12 @@ use Skyline\Compiler\CompilerContext;
 use Skyline\Compiler\Project\Attribute\AttributeInterface;
 use Skyline\Compiler\Project\Attribute\SearchPathAttribute;
 use Skyline\Compiler\Project\Attribute\SearchPathCollection;
-use Skyline\Compiler\Project\ProjectInterface;
 
 class SourceCodeManager
 {
     /** @var CompilerContext */
     protected $context;
 
-    /** @var ProjectInterface */
-    protected $project;
 
     /** @var array */
     protected $sourceFiles;
@@ -103,7 +100,7 @@ class SourceCodeManager
             }
 
             /** @var SearchPathCollection $searchPaths */
-            $searchPaths = $this->getProject()->getAttribute( AttributeInterface::SEARCH_PATHS_ATTR_NAME );
+            $searchPaths = $this->getContext()->getProject()->getAttribute( AttributeInterface::SEARCH_PATHS_ATTR_NAME );
             if($searchPaths instanceof SearchPathCollection) {
                 if($dirs = $searchPaths->getSearchPaths( SearchPathAttribute::SEARCH_PATH_VENDOR )) {
                     $addSrcDir($dirs);
@@ -154,23 +151,5 @@ class SourceCodeManager
      */
     protected function shouldIncludeFilename(string $filename): bool {
         return true;
-    }
-
-    /**
-     * @return ProjectInterface
-     */
-    public function getProject(): ProjectInterface
-    {
-        if(!$this->project)
-            return $this->getContext()->getProject();
-        return $this->project;
-    }
-
-    /**
-     * @param ProjectInterface $project
-     */
-    public function setProject(ProjectInterface $project): void
-    {
-        $this->project = $project;
     }
 }

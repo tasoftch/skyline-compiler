@@ -161,6 +161,9 @@ class CompilerContext
     }
 
     /**
+     * Returns the project.
+     * While compiling, it never returns NULL!
+     *
      * @return ProjectInterface|null
      */
     public function getProject(): ?ProjectInterface
@@ -263,6 +266,8 @@ class CompilerContext
                 throw new CompilerException("Compilation without project settings is not possible");
         }
 
+        $this->project = $project;
+
         try {
             set_error_handler(function($code, $msg, $file, $line) {
                 switch(AbstractErrorHandlerService::detectErrorLevel($code)) {
@@ -273,7 +278,7 @@ class CompilerContext
                 }
             });
 
-            $this->getSourceCodeManager()->setProject($project);
+
 
             /** @var CompilerInterface $compiler */
             foreach($this->getOrganizedCompilersIterator() as $compiler) {
