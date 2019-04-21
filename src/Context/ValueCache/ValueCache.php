@@ -97,12 +97,12 @@ class ValueCache implements ValueCacheInterface, Countable
      * @return array
      */
     public function fetchAll() {
-        $values = [];
+        $list = [];
         foreach($this->cache as $domain => $values) {
             foreach($values as $key => $value)
-                $values[ sprintf("%s.%s", $domain!='<NULL>' ?: '', $key) ] = $value;
+                $list[ sprintf("%s.%s", $domain!='<NULL>' ?: '', $key) ] = $value;
         }
-        return $values;
+        return $list;
     }
 
 
