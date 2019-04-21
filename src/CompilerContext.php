@@ -244,6 +244,14 @@ class CompilerContext
         return $depCollection->getIterator();
     }
 
+    /**
+     * Main compile command.
+     * Call this function to resolve any compiler factories and dependents.
+     * Then every compiler is called to compile its stuff
+     *
+     * The compilation does not throw any error or notification. Everything is redirected to the logger.
+     * To handle errors, use a different logger.
+     */
     public function compile() {
         if(!($project = $this->getProject())) {
             $project = CC::get($this->getConfiguration(), CC::COMPILER_PROJECT);
