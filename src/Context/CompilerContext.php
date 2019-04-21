@@ -34,6 +34,7 @@
 
 namespace Skyline\Compiler\Context;
 
+use Skyline\Compiler\CompilerConfiguration as CC;
 use Skyline\Compiler\Context\FileCache\FileCacheInterface;
 use Skyline\Compiler\Context\FileCache\LocalFileCache;
 use Skyline\Compiler\Context\Logger\LoggerInterface;
@@ -93,8 +94,10 @@ class CompilerContext
      */
     public function getFileCache(): FileCacheInterface
     {
-        if(!$this->fileCache)
-            $this->fileCache = new LocalFileCache("./compiler-cache.php");
+        if(!$this->fileCache) {
+            $fn = CC::get($this->getConfiguration(), CC::COMPILER_CACHE_FILENAME);
+            $this->fileCache = new LocalFileCache($fn);
+        }
         return $this->fileCache;
     }
 
