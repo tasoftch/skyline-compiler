@@ -32,52 +32,15 @@
  *
  */
 
-namespace Skyline\Compiler;
+namespace Skyline\Compiler\Context\Code;
 
 
-final class CompilerConfiguration
+class TestsExcludingSourceCodeManager extends SourceCodeManager
 {
-    const COMPILER_CACHE_FILENAME = 'compiler-cache';
-    const COMPILER_PROJECT = 'project';
-
-    const COMPILER_SOURCE_DIRECTORIES = 'source-dirs';
-    const COMPILER_EXCLUDED_FILE_GLOB_NAMES = 'source-dirs-excl';
-
-    const SKYLINE_APP_DATA_DIR = 'skyline-add-data';
-    const SKYLINE_PUBLIC_DATA_DIR = 'skyline-public-data';
-
-    const SKYLINE_DIR_COMPILED = 'dir-compiled';
-    const SKYLINE_DIR_CLASSES = 'dir-classes';
-    const SKYLINE_DIR_CONFIG = 'dir-config';
-    const SKYLINE_DIR_MODULES = 'dir-modules';
-    const SKYLINE_DIR_USER_INTERFACE = 'dir-ui';
-
-
-    /**
-     * Defaults
-     * @var array
-     */
-    private static $defaults = [
-        self::COMPILER_CACHE_FILENAME => "./compiler-cache.php",
-        self::SKYLINE_APP_DATA_DIR => 'SkylineAppData',
-        self::SKYLINE_PUBLIC_DATA_DIR => 'public_html',
-
-        self::SKYLINE_DIR_COMPILED => 'Compiled',
-        self::SKYLINE_DIR_CLASSES => 'Classes',
-        self::SKYLINE_DIR_CONFIG => 'Config',
-        self::SKYLINE_DIR_MODULES => 'Modules',
-        self::SKYLINE_DIR_USER_INTERFACE => 'UI',
-    ];
-
-    /**
-     * Fetches a configuration
-     *
-     * @param $array
-     * @param $name
-     * @param null $default
-     * @return mixed|null
-     */
-    public static function get($array, $name, $default = NULL) {
-        return $array[$name] ?? self::$defaults[$name] ?? $default;
+    protected function shouldIncludeFilename(string $filename): bool
+    {
+        if(is_dir($filename) && preg_match("/^tests?$/i", basename($filename)))
+            return false;
+        return true;
     }
 }

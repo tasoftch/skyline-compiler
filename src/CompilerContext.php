@@ -36,6 +36,7 @@ namespace Skyline\Compiler;
 
 use Iterator;
 use Skyline\Compiler\CompilerConfiguration as CC;
+use Skyline\Compiler\Context\Code\SourceCodeManager;
 use Skyline\Compiler\Context\FileCache\FileCacheInterface;
 use Skyline\Compiler\Context\FileCache\LocalFileCache;
 use Skyline\Compiler\Context\Logger\LoggerInterface;
@@ -66,6 +67,10 @@ class CompilerContext
     /** @var Config */
     private $configuration;
 
+    /** @var SourceCodeManager */
+    private $sourceCodeManager;
+
+    /** @var array  */
     private $compilers = [];
 
     /**
@@ -168,6 +173,8 @@ class CompilerContext
      */
     public function getConfiguration(): Config
     {
+        if(!$this->configuration)
+            $this->configuration = new Config();
         return $this->configuration;
     }
 
@@ -269,6 +276,8 @@ class CompilerContext
                 }
             });
 
+            $this->getSourceCodeManager()->setProject($project);
+
             /** @var CompilerInterface $compiler */
             foreach($this->getOrganizedCompilersIterator() as $compiler) {
                 $compiler->compile($this);
@@ -278,5 +287,23 @@ class CompilerContext
         } finally {
             restore_error_handler();
         }
+    }
+
+    /**
+     * @return SourceCodeManager
+     */
+    public function getSourceCodeManager(): SourceCodeManager
+    {
+        if(!$this->sourceCodeManager)
+            $this->sourceCodeManager = new SourceCodeManager($this);
+        return $this->sourceCodeManager;
+    }
+
+    /**
+     * @param SourceCodeManager $sourceCodeManager
+     */
+    public function setSourceCodeManager(SourceCodeManager $sourceCodeManager): void
+    {
+        $this->sourceCodeManager = $sourceCodeManager;
     }
 }

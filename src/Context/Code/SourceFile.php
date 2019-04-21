@@ -32,52 +32,62 @@
  *
  */
 
-namespace Skyline\Compiler;
+namespace Skyline\Compiler\Context\Code;
 
 
-final class CompilerConfiguration
+use Skyline\Compiler\Exception\FileOrDirectoryNotFoundException;
+use SplFileInfo;
+
+final class SourceFile
 {
-    const COMPILER_CACHE_FILENAME = 'compiler-cache';
-    const COMPILER_PROJECT = 'project';
+    /** @var string */
+    private $fileName;
+    private $pathName;
 
-    const COMPILER_SOURCE_DIRECTORIES = 'source-dirs';
-    const COMPILER_EXCLUDED_FILE_GLOB_NAMES = 'source-dirs-excl';
-
-    const SKYLINE_APP_DATA_DIR = 'skyline-add-data';
-    const SKYLINE_PUBLIC_DATA_DIR = 'skyline-public-data';
-
-    const SKYLINE_DIR_COMPILED = 'dir-compiled';
-    const SKYLINE_DIR_CLASSES = 'dir-classes';
-    const SKYLINE_DIR_CONFIG = 'dir-config';
-    const SKYLINE_DIR_MODULES = 'dir-modules';
-    const SKYLINE_DIR_USER_INTERFACE = 'dir-ui';
-
+    public static $stringifyReal = false;
 
     /**
-     * Defaults
-     * @var array
+     * SourceFile constructor.
+     * @param $filename
      */
-    private static $defaults = [
-        self::COMPILER_CACHE_FILENAME => "./compiler-cache.php",
-        self::SKYLINE_APP_DATA_DIR => 'SkylineAppData',
-        self::SKYLINE_PUBLIC_DATA_DIR => 'public_html',
+    public function __construct($filename)
+    {
+        if($filename instanceof SplFileInfo) {
+            $this->fileName = $filename->getFilename();
+            $this->pathName = $filename->getPathname();
+        } else {
+            $this->fileName = basename( $this->pathName = (string) $filename );
+        }
 
-        self::SKYLINE_DIR_COMPILED => 'Compiled',
-        self::SKYLINE_DIR_CLASSES => 'Classes',
-        self::SKYLINE_DIR_CONFIG => 'Config',
-        self::SKYLINE_DIR_MODULES => 'Modules',
-        self::SKYLINE_DIR_USER_INTERFACE => 'UI',
-    ];
+        if(!file_exists($this->pathName)) {
+            $e = new FileOrDirectoryNotFoundException("File or directory $this->fileName not found");
+            $e->setFilename($this->pathName);
+            throw $e;
+        }
+    }
 
     /**
-     * Fetches a configuration
-     *
-     * @param $array
-     * @param $name
-     * @param null $default
-     * @return mixed|null
+     * @return string
      */
-    public static function get($array, $name, $default = NULL) {
-        return $array[$name] ?? self::$defaults[$name] ?? $default;
+    public function getFileName(): string
+    {
+        return $this->fileName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPathName(): string
+    {
+        return $this->pathName;
+    }
+
+    public function getRealPath() {
+        return realpath($this->pathName);
+    }
+
+    public function __toString()
+    {
+        return self::$stringifyReal ? $this->getRealPath() : $this->getPathName();
     }
 }

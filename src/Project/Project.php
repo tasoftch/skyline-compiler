@@ -87,9 +87,9 @@ class Project implements ProjectInterface, MutableProjectInterface
     /**
      * @inheritDoc
      */
-    public function getAttribute(string $attributeName): AttributeInterface
+    public function getAttribute(string $attributeName): ?AttributeInterface
     {
-        return $this->attributes[$attributeName] ?? NULL;
+        return $this->attributes->getAttribute($attributeName);
     }
 
     /**
