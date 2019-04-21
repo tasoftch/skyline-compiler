@@ -92,6 +92,10 @@ class ValueCache implements ValueCacheInterface, Countable
         return $dom->getValues();
     }
 
+    /**
+     * Fetches all values
+     * @return array
+     */
     public function fetchAll() {
         $values = [];
         foreach($this->cache as $domain => $values) {
