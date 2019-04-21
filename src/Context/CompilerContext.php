@@ -34,19 +34,18 @@
 
 namespace Skyline\Compiler\Context;
 
-
-use Skyline\Compiler\AbstractMainCompiler;
 use Skyline\Compiler\Context\FileCache\FileCacheInterface;
 use Skyline\Compiler\Context\FileCache\LocalFileCache;
 use Skyline\Compiler\Context\Logger\LoggerInterface;
 use Skyline\Compiler\Context\Logger\OutputLogger;
 use Skyline\Compiler\Context\ValueCache\ValueCache;
 use Skyline\Compiler\Context\ValueCache\ValueCacheInterface;
+use Skyline\Compiler\Project\ProjectInterface;
 
 class CompilerContext
 {
-    /** @var AbstractMainCompiler */
-    private $mainCompiler;
+    /** @var ProjectInterface */
+    private $project;
 
     /** @var LoggerInterface */
     private $logger;
@@ -58,20 +57,14 @@ class CompilerContext
     private $fileCache;
 
     /**
-     * @return AbstractMainCompiler
+     * CompilerContext constructor.
+     * @param ProjectInterface $project
      */
-    public function getMainCompiler(): AbstractMainCompiler
+    public function __construct(ProjectInterface $project)
     {
-        return $this->mainCompiler;
+        $this->project = $project;
     }
 
-    /**
-     * @param AbstractMainCompiler $mainCompiler
-     */
-    public function setMainCompiler(AbstractMainCompiler $mainCompiler): void
-    {
-        $this->mainCompiler = $mainCompiler;
-    }
 
     /**
      * @return LoggerInterface
@@ -125,6 +118,14 @@ class CompilerContext
     public function setValueCache(ValueCacheInterface $valueCache): void
     {
         $this->valueCache = $valueCache;
+    }
+
+    /**
+     * @return ProjectInterface
+     */
+    public function getProject(): ProjectInterface
+    {
+        return $this->project;
     }
 
 
