@@ -36,6 +36,7 @@ namespace Skyline\Compiler\Factory;
 
 
 use Skyline\Compiler\CompilerConfiguration as CC;
+use Skyline\Compiler\Predef\ComposerPackagesOrderCompiler;
 use Skyline\Compiler\Predef\CreateDirectoriesIfNotExistCompiler;
 
 class BasicCompilersFactory extends AbstractExtendedCompilerFactory
@@ -51,6 +52,12 @@ class BasicCompilersFactory extends AbstractExtendedCompilerFactory
                         CC::get([], CC::SKYLINE_DIR_COMPILED),
                         CC::get([], CC::SKYLINE_DIR_CONFIG)
                     ]
+                ]
+            ],
+            'composer-packages-order' => [
+                self::COMPILER_CLASS_KEY => ComposerPackagesOrderCompiler::class,
+                self::COMPILER_ARGUMENTS_KEY => [
+                    'rootComposerDirectory' => './'
                 ]
             ]
         ];
