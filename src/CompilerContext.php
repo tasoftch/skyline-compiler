@@ -42,7 +42,6 @@ use Skyline\Compiler\Context\Logger\OutputLogger;
 use Skyline\Compiler\Context\ValueCache\ValueCache;
 use Skyline\Compiler\Context\ValueCache\ValueCacheInterface;
 use Skyline\Compiler\Exception\CompilerException;
-use Skyline\Compiler\Exception\DuplicateCompilerException;
 use Skyline\Compiler\Project\ProjectInterface;
 use Skyline\Kernel\Service\Error\AbstractErrorHandlerService;
 use TASoft\Config\Config;
@@ -79,18 +78,16 @@ class CompilerContext
     /**
      * Makes a compiler ready to execute
      *
-     * @param CompilerInterface $compiler
+     * @param CompilerInterface|CompilerFactoryInterface $compiler
      */
-    public function addCompiler(CompilerInterface $compiler) {
-        $id = $compiler->getCompilerID();
-        if($cmp = $this->compilers[$id] ?? NULL) {
-            $e = new DuplicateCompilerException("Compiler with id #$id already exists");
-            $e->setCompiler($cmp);
-            throw $e;
-        }
-
-        $this->compilers[$id] = $compiler;
+    public function addCompiler($compiler) {
+        if($compiler instanceof CompilerFactoryInterface || $compiler instanceof CompilerInterface)
+            $this->compilers[] = $compiler;
+        else
+            throw new CompilerException("Can only add objects that implement CompilerInterface or CompilerFactoryInterface to context");
     }
+
+
 
     /**
      * @return LoggerInterface
