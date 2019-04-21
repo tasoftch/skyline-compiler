@@ -35,11 +35,25 @@
 namespace Skyline\Compiler\Context\ValueCache;
 
 
+use Countable;
 use TASoft\Config\Config;
 
-class ValueCache implements ValueCacheInterface
+class ValueCache implements ValueCacheInterface, Countable
 {
-    private $cache;
+    private $cache = [];
+
+    /**
+     * @inheritDoc
+     */
+    public function count()
+    {
+        $count = 0;
+        foreach($this->cache as $c) {
+            $count += count($c);
+        }
+        return $count;
+    }
+
 
     /**
      * ValueCache constructor.
@@ -78,6 +92,15 @@ class ValueCache implements ValueCacheInterface
         return $dom->getValues();
     }
 
+    public function fetchAll() {
+        $values = [];
+        foreach($this->cache as $domain => $values) {
+            foreach($values as $key => $value)
+                $values[ sprintf("%s.%s", $domain!='<NULL>' ?: '', $key) ] = $value;
+        }
+        return $values;
+    }
+
 
     /**
      * @param $domain
@@ -86,9 +109,9 @@ class ValueCache implements ValueCacheInterface
      */
     private function _getDomain($domain) {
         if(!$domain) {
-            if(!isset($this->cache['__tasoft_null_domain']))
-                $this->cache['__tasoft_null_domain'] = new Config([]);
-            return $this->cache['__tasoft_null_domain'];
+            if(!isset($this->cache['<NULL>']))
+                $this->cache['<NULL>'] = new Config([]);
+            return $this->cache['<NULL>'];
         }
 
         if(!isset($this->cache[$domain]))
