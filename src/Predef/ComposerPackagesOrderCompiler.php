@@ -91,30 +91,31 @@ class ComposerPackagesOrderCompiler extends AbstractCompiler
         $dependencyCollection = new ComposerPackageDependencyCollection();
         $root = $this->getComposer( $this->scanDir );
 
+        $register = function($json, $path) use ($dependencyCollection) {
+            $req = array_keys($json["require"] ?? []);
+            if($this->requireDev) {
+                $req = array_unique(array_merge($req, array_keys($json["require-dev"] ?? [])));
+            }
+            $dependencyCollection->add($json["name"], $path, $req);
+        };
+
         foreach(($root["repositories"] ?? []) as $rep) {
             if(($rep["type"] ?? NULL) == 'path') {
                 $path = realpath($rep["url"]);
                 if($path && is_file("$path/composer.json")) {
                     $js = $this->getComposer($path);
-                    $req = array_keys($js["require"] ?? []);
-                    if($this->requireDev) {
-                        $req = array_unique(array_merge($req, array_keys($js["require-dev"] ?? [])));
-                    }
-                    $dependencyCollection->add($js["name"], $path, $req);
+                    $register($js, $path);
                 }
             }
         }
 
 
         foreach($context->getSourceCodeManager()->yieldSourceFiles("/^composer\.json$/i") as $file) {
-            print_r($file);
+            $js = $this->getComposer($file);
+            $register($js, (string) $file);
         }
 
-        $req = array_keys($root["require"] ?? []);
-        if($this->requireDev) {
-            $req = array_unique(array_merge($req, array_keys($root["require-dev"] ?? [])));
-        }
-        $dependencyCollection->add($root["name"], $this->scanDir, $req);
+        $register($root, $this->scanDir);
 
         $ordered = $dependencyCollection->getOrderedElements();
 
