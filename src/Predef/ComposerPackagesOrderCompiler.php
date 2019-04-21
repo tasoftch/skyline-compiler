@@ -38,9 +38,6 @@ namespace Skyline\Compiler\Predef;
 use Skyline\Compiler\AbstractCompiler;
 use Skyline\Compiler\CompilerContext;
 use Skyline\Compiler\Helper\ComposerPackageDependencyCollection;
-use Skyline\Compiler\Project\Attribute\AttributeInterface;
-use Skyline\Compiler\Project\Attribute\SearchPathAttribute;
-use Skyline\Compiler\Project\Attribute\SearchPathCollection;
 
 /**
  * Searches in vendor directories for all composer packages and brings them into the right order, respecting the dependencies
@@ -53,7 +50,6 @@ class ComposerPackagesOrderCompiler extends AbstractCompiler
     private $files = [];
 
     private $scanDir = [];
-    private $requireDev = false;
 
     /**
      * Reads the composer.json file directly or from directory and adds it to cache.
@@ -93,9 +89,6 @@ class ComposerPackagesOrderCompiler extends AbstractCompiler
 
         $register = function($json, $path) use ($dependencyCollection) {
             $req = array_keys($json["require"] ?? []);
-            if($this->requireDev) {
-                $req = array_unique(array_merge($req, array_keys($json["require-dev"] ?? [])));
-            }
             $dependencyCollection->add($json["name"], $path, $req);
         };
 
@@ -111,7 +104,7 @@ class ComposerPackagesOrderCompiler extends AbstractCompiler
 
 
         foreach($context->getSourceCodeManager()->yieldSourceFiles("/^composer\.json$/i") as $file) {
-            $js = $this->getComposer($file);
+            $js = $this->getComposer((string)$file);
             $register($js, (string) $file);
         }
 
@@ -128,10 +121,9 @@ class ComposerPackagesOrderCompiler extends AbstractCompiler
      * @param string|NULL $scanDir
      * @param bool $requireDev
      */
-    public function __construct(string $compilerID, string $scanDir = NULL, bool $requireDev = false)
+    public function __construct(string $compilerID, string $scanDir = NULL)
     {
         parent::__construct($compilerID);
         $this->scanDir = is_dir($scanDir) ? $scanDir : getcwd();
-        $this->requireDev = $requireDev;
     }
 }

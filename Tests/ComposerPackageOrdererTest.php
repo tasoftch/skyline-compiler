@@ -43,7 +43,6 @@ use PHPUnit\Framework\TestCase;
 use Skyline\Compiler\CompilerContext;
 use Skyline\Compiler\Predef\ComposerPackagesOrderCompiler;
 use Skyline\Compiler\Project\Loader\XML;
-use Skyline\Compiler\Project\Project;
 
 class ComposerPackageOrdererTest extends TestCase
 {
