@@ -229,22 +229,19 @@ class CompilerContext
      */
     private function getOrganizedCompilersIterator(): Iterator {
         $depCollection = new DependencyCollection(false);
-
-        $add = function(CompilerInterface $compiler) use ($depCollection) {
-            $id = $compiler->getCompilerID();
-            $deps = $compiler->getDependsOnCompilerIDs();
-            if($deps)
-                $depCollection->add($id, $compiler, $deps);
-            else
-                $depCollection->add($id, $compiler);
-        };
+        $depCollection->setAcceptsDuplicates(false);
 
         foreach($this->compilers as $compiler) {
-            if($compiler instanceof CompilerInterface)
-                $add($compiler);
+            if($compiler instanceof CompilerInterface) {
+                $id = $compiler->getCompilerID();
+                $deps = $compiler->getDependsOnCompilerIDs();
+                if($deps)
+                    $depCollection->add($id, $compiler, $deps);
+                else
+                    $depCollection->add($id, $compiler);
+            }
             elseif($compiler instanceof CompilerFactoryInterface) {
-                foreach($compiler->getCompilerInstances() as $cmp)
-                    $add($cmp);
+                $compiler->registerCompilerInstances($depCollection);
             }
         }
 

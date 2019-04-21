@@ -35,11 +35,15 @@
 namespace Skyline\Compiler;
 
 
+use TASoft\Collection\DependencyCollection;
+
 interface CompilerFactoryInterface
 {
     /**
-     * Creates and returns the compiler instances
-     * @return CompilerInterface[]
+     * The factory should add all its compilers to the dependency collection
+     *
+     * @param DependencyCollection $dependencyCollection
+     * @return void
      */
-    public function getCompilerInstances(): array;
+    public function registerCompilerInstances(DependencyCollection $dependencyCollection);
 }
