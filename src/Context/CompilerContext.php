@@ -41,6 +41,7 @@ use Skyline\Compiler\Context\Logger\OutputLogger;
 use Skyline\Compiler\Context\ValueCache\ValueCache;
 use Skyline\Compiler\Context\ValueCache\ValueCacheInterface;
 use Skyline\Compiler\Project\ProjectInterface;
+use TASoft\Config\Config;
 
 class CompilerContext
 {
@@ -55,6 +56,9 @@ class CompilerContext
 
     /** @var FileCacheInterface */
     private $fileCache;
+
+    /** @var Config */
+    private $configuration;
 
     /**
      * CompilerContext constructor.
@@ -126,6 +130,22 @@ class CompilerContext
     public function getProject(): ProjectInterface
     {
         return $this->project;
+    }
+
+    /**
+     * @return Config
+     */
+    public function getConfiguration(): Config
+    {
+        return $this->configuration;
+    }
+
+    /**
+     * @param Config $configuration
+     */
+    public function setConfiguration(Config $configuration): void
+    {
+        $this->configuration = $configuration;
     }
 
 
