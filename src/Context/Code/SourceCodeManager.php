@@ -136,7 +136,7 @@ class SourceCodeManager
         }
 
         foreach($this->sourceFiles as $fileName => $file) {
-            if(NULL == $fileNameRegex || preg_match($fileNameRegex, $fileName))
+            if(NULL == $fileNameRegex || preg_match($fileNameRegex, basename($fileName)))
                 yield $fileName => $file;
         }
     }

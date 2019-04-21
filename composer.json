@@ -18,6 +18,7 @@
     "php": "^7.2",
     "ext-libxml": "*",
     "ext-simplexml": "*",
+    "ext-json": "*",
     "tasoft/service-manager": "dev-master",
     "tasoft/config": "dev-master",
     "skyline/kernel": "dev-master",
