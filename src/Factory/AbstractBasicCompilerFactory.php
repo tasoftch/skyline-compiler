@@ -52,15 +52,9 @@ abstract class AbstractBasicCompilerFactory implements CompilerFactoryInterface
     public function registerCompilerInstances(DependencyCollection $dependencyCollection)
     {
         foreach($this->getCompilerDescriptions() as $key => $class) {
-            if(is_numeric($key)) {
-                /** @var CompilerInterface $compiler */
-                $compiler = new $class();
-                $dependencyCollection->add($compiler->getCompilerID(), $compiler, $compiler->getDependsOnCompilerIDs());
-            } else {
-                /** @var CompilerInterface $compiler */
-                $compiler = new $class($key);
-                $dependencyCollection->add($key, $compiler, $compiler->getDependsOnCompilerIDs());
-            }
+            /** @var CompilerInterface $compiler */
+            $compiler = new $class($key);
+            $dependencyCollection->add($key, $compiler, $compiler->getDependsOnCompilerIDs());
         }
     }
 
@@ -68,7 +62,6 @@ abstract class AbstractBasicCompilerFactory implements CompilerFactoryInterface
      * Returns the compiler classes and ids
      * @return array
      * @example [
-     *      My\FirstCompiler::class,                // Just creates the compiler
      *      'My-Compiler-ID' => My\Compiler::class  // Passes the array's key into the compiler's constructor
      * ]
      */
