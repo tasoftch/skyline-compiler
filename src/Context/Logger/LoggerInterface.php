@@ -35,6 +35,8 @@
 namespace Skyline\Compiler\Context\Logger;
 
 
+use Throwable;
+
 interface LoggerInterface
 {
     const VERBOSITY_DEBUG = 0;
@@ -47,4 +49,5 @@ interface LoggerInterface
     public function logNotice($message, $context = NULL, ...$args);
     public function logWarning($message, $context = NULL, ...$args);
     public function logError($message, $context = NULL, ...$args);
+    public function logException(Throwable $exception);
 }

@@ -35,6 +35,8 @@
 namespace Skyline\Compiler\Context\Logger;
 
 
+use Throwable;
+
 class OutputLogger implements LoggerInterface
 {
     public function logText($message, $verbosity = self::VERBOSITY_NORMAL, $context = NULL, ...$args)
@@ -57,4 +59,8 @@ class OutputLogger implements LoggerInterface
         printf($message, ...$args);
     }
 
+    public function logException(Throwable $exception)
+    {
+        printf($exception->getMessage());
+    }
 }
