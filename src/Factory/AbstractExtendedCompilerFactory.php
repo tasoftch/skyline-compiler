@@ -62,7 +62,8 @@ abstract class AbstractExtendedCompilerFactory extends AbstractBasicCompilerFact
                 if(!isset($description[ self::COMPILER_ID_KEY ]))
                     $description[ self::COMPILER_ID_KEY ] = $className;
 
-                $compiler = new $class($description);
+                $id = $description[ self::COMPILER_ID_KEY ];
+                $compiler = new $class($id, $description);
 
                 $id = $description[ self::COMPILER_ID_KEY ];
                 $deps = $description[ self::COMPILER_DEPENDENCIES_KEY ] ?? [];
@@ -70,7 +71,7 @@ abstract class AbstractExtendedCompilerFactory extends AbstractBasicCompilerFact
                 $dependencyCollection->add($id, $compiler, $deps);
             } else {
                 // $className is compiler id and $description is class name
-                $dependencyCollection->add($className, new $description());
+                $dependencyCollection->add($className, new $description($className));
             }
         }
     }
@@ -88,6 +89,7 @@ abstract class AbstractExtendedCompilerFactory extends AbstractBasicCompilerFact
      *          self::COMPILER_DEPENDENCIES_KEY => [id-of-compiler1, id-of-compiler2, ...] // Optional
      *      ]
      * ]
+     * NOTE: The ID is always passed into the constructor, you don't need to repeat it in COMPILER_ARGUMENTS_KEY!
      */
     abstract protected function getCompilerDescriptions(): array;
 }
