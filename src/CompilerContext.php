@@ -76,6 +76,11 @@ class CompilerContext
         $this->project = $project;
     }
 
+    /**
+     * Makes a compiler ready to execute
+     *
+     * @param CompilerInterface $compiler
+     */
     public function addCompiler(CompilerInterface $compiler) {
         $id = $compiler->getCompilerID();
         if($cmp = $this->compilers[$id] ?? NULL) {
