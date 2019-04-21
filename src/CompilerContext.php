@@ -87,7 +87,15 @@ class CompilerContext
             throw new CompilerException("Can only add objects that implement CompilerInterface or CompilerFactoryInterface to context");
     }
 
-
+    /**
+     * Removes a compiler from list if exists
+     *
+     * @param $compiler
+     */
+    public function removeCompiler($compiler) {
+        if(($idx = array_search($compiler, $this->compilers)) !== false)
+            unset($this->compilers[$idx]);
+    }
 
     /**
      * @return LoggerInterface
