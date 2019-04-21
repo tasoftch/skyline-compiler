@@ -41,8 +41,11 @@ use Skyline\Compiler\Context\Logger\LoggerInterface;
 use Skyline\Compiler\Context\Logger\OutputLogger;
 use Skyline\Compiler\Context\ValueCache\ValueCache;
 use Skyline\Compiler\Context\ValueCache\ValueCacheInterface;
+use Skyline\Compiler\Exception\CompilerException;
 use Skyline\Compiler\Project\ProjectInterface;
+use Skyline\Kernel\Service\Error\AbstractErrorHandlerService;
 use TASoft\Config\Config;
+use Throwable;
 
 class CompilerContext
 {
@@ -128,9 +131,9 @@ class CompilerContext
     }
 
     /**
-     * @return ProjectInterface
+     * @return ProjectInterface|null
      */
-    public function getProject(): ProjectInterface
+    public function getProject(): ?ProjectInterface
     {
         return $this->project;
     }
@@ -151,5 +154,29 @@ class CompilerContext
         $this->configuration = $configuration;
     }
 
+    public function compile() {
+        if(!($project = $this->getProject())) {
+            $project = CC::get($this->getConfiguration(), CC::COMPILER_PROJECT);
+            if(!$project)
+                throw new CompilerException("Compilation without project settings is not possible");
+        }
 
+        try {
+            set_error_handler(function($code, $msg, $file, $line) {
+                switch(AbstractErrorHandlerService::detectErrorLevel($code)) {
+                    case AbstractErrorHandlerService::NOTICE_ERROR_LEVEL: return $this->getLogger()->logNotice($msg, [$file, $line]);
+                    case AbstractErrorHandlerService::DEPRECATED_ERROR_LEVEL:
+                    case AbstractErrorHandlerService::WARNING_ERROR_LEVEL: return $this->getLogger()->logWarning($msg, [$file, $line]);
+                    default: return $this->getLogger()->logError($msg, [$file, $line]);
+                }
+            });
+
+
+
+        } catch (Throwable $throwable) {
+            $this->getLogger()->logException($throwable);
+        } finally {
+            restore_error_handler();
+        }
+    }
 }

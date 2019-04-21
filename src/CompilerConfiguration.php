@@ -38,6 +38,7 @@ namespace Skyline\Compiler;
 final class CompilerConfiguration
 {
     const COMPILER_CACHE_FILENAME = 'compiler-cache';
+    const COMPILER_PROJECT = 'project';
 
     /**
      * Defaults
