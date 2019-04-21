@@ -42,6 +42,7 @@ use Skyline\Compiler\Context\Logger\OutputLogger;
 use Skyline\Compiler\Context\ValueCache\ValueCache;
 use Skyline\Compiler\Context\ValueCache\ValueCacheInterface;
 use Skyline\Compiler\Exception\CompilerException;
+use Skyline\Compiler\Exception\DuplicateCompilerException;
 use Skyline\Compiler\Project\ProjectInterface;
 use Skyline\Kernel\Service\Error\AbstractErrorHandlerService;
 use TASoft\Config\Config;
@@ -77,9 +78,13 @@ class CompilerContext
 
     public function addCompiler(CompilerInterface $compiler) {
         $id = $compiler->getCompilerID();
-        if(isset($this->compilers[$id])) {
-
+        if($cmp = $this->compilers[$id] ?? NULL) {
+            $e = new DuplicateCompilerException("Compiler with id #$id already exists");
+            $e->setCompiler($cmp);
+            throw $e;
         }
+
+        $this->compilers[$id] = $compiler;
     }
 
     /**
