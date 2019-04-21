@@ -100,7 +100,7 @@ class ValueCache implements ValueCacheInterface, Countable
         $list = [];
         foreach($this->cache as $domain => $values) {
             foreach($values as $key => $value)
-                $list[ sprintf("%s.%s", $domain!='<NULL>' ?: '', $key) ] = $value;
+                $list[ sprintf("%s.%s", $domain!='<NULL>' ? $domain : '', $key) ] = $value;
         }
         return $list;
     }

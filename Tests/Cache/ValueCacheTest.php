@@ -57,7 +57,11 @@ class ValueCacheTest extends TestCase
         $cache->postValue(5, "test");
         $this->assertCount(3, $cache);
 
-
+        $this->assertEquals([
+            ".test" => 5,
+            ".test2" => 2,
+            "domain.test" => 3
+        ], $cache->fetchAll());
     }
 
     public function testFetchValue()
