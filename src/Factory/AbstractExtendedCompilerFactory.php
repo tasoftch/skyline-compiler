@@ -63,7 +63,11 @@ abstract class AbstractExtendedCompilerFactory extends AbstractBasicCompilerFact
                     $description[ self::COMPILER_ID_KEY ] = $className;
 
                 $id = $description[ self::COMPILER_ID_KEY ];
-                $compiler = new $class($id, $description);
+                if($args = $description[ self::COMPILER_ARGUMENTS_KEY ] ?? NULL) {
+                    $compiler = new $class($id, ...array_values($args));
+                } else {
+                    $compiler = new $class($id, $description);
+                }
 
                 $id = $description[ self::COMPILER_ID_KEY ];
                 $deps = $description[ self::COMPILER_DEPENDENCIES_KEY ] ?? [];
