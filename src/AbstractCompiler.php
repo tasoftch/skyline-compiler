@@ -37,6 +37,19 @@ namespace Skyline\Compiler;
 
 abstract class AbstractCompiler implements CompilerInterface
 {
+    /** @var string */
+    private $compilerID;
+
+    /**
+     * AbstractCompiler constructor.
+     * @param string $compilerID
+     */
+    public function __construct(string $compilerID)
+    {
+        $this->compilerID = $compilerID;
+    }
+
+
     /**
      * @inheritDoc
      */
@@ -51,6 +64,14 @@ abstract class AbstractCompiler implements CompilerInterface
     public function getDependsOnCompilerIDs(): ?array
     {
         return [];
+    }
+
+    /**
+     * @return string
+     */
+    public function getCompilerID(): string
+    {
+        return $this->compilerID;
     }
 
 

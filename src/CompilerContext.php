@@ -32,7 +32,7 @@
  *
  */
 
-namespace Skyline\Compiler\Context;
+namespace Skyline\Compiler;
 
 use Skyline\Compiler\CompilerConfiguration as CC;
 use Skyline\Compiler\Context\FileCache\FileCacheInterface;
@@ -64,6 +64,8 @@ class CompilerContext
     /** @var Config */
     private $configuration;
 
+    private $compilers = [];
+
     /**
      * CompilerContext constructor.
      * @param ProjectInterface $project
@@ -73,6 +75,12 @@ class CompilerContext
         $this->project = $project;
     }
 
+    public function addCompiler(CompilerInterface $compiler) {
+        $id = $compiler->getCompilerID();
+        if(isset($this->compilers[$id])) {
+
+        }
+    }
 
     /**
      * @return LoggerInterface
