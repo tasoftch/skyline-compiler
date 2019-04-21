@@ -180,6 +180,41 @@ class CompilerContext
     }
 
     /**
+     * Returns the Skyline CMS Application data directory (absolute)
+     * @return string
+     */
+    public function getSkylineAppDataDirectory() {
+        $skylineTarget = CC::get($this->getConfiguration(), CC::SKYLINE_APP_DATA_DIR);
+        $projDir = $this->getProject()->getProjectRootDirectory();
+        return "$projDir/$skylineTarget/";
+    }
+
+    /**
+     * Returns the Skyline CMS Application data directory (absolute)
+     * @return string
+     */
+    public function getSkylinePublicDataDirectory() {
+        $skylineTarget = CC::get($this->getConfiguration(), CC::SKYLINE_PUBLIC_DATA_DIR);
+        $projDir = $this->getProject()->getProjectRootDirectory();
+        return "$projDir/$skylineTarget/";
+    }
+
+    /**
+     *  Returns the required Skyline CMS Application data sub directory
+     *
+     * @param string $dirName
+     * @return string
+     * @see CompilerConfiguration::SKYLINE_DIR_* constants
+     */
+    public function getSkylineAppDirectory(string $dirName) {
+        $name = CC::get([], $dirName);
+        if($name) {
+            return $this->getSkylineAppDataDirectory() . "/$name";
+        }
+        return NULL;
+    }
+
+    /**
      * Resolves the compilers against their dependencies and creates an iterator
      *
      * @return Iterator
@@ -189,7 +224,12 @@ class CompilerContext
         $depCollection = new DependencyCollection(false);
 
         $add = function(CompilerInterface $compiler) use ($depCollection) {
-
+            $id = $compiler->getCompilerID();
+            $deps = $compiler->getDependsOnCompilerIDs();
+            if($deps)
+                $depCollection->add($id, $compiler, $deps);
+            else
+                $depCollection->add($id, $compiler);
         };
 
         foreach($this->compilers as $compiler) {
