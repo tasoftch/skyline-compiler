@@ -20,7 +20,8 @@
     "ext-simplexml": "*",
     "tasoft/service-manager": "dev-master",
     "tasoft/config": "dev-master",
-    "skyline/kernel": "dev-master"
+    "skyline/kernel": "dev-master",
+    "symfony/filesystem": "dev-master"
   },
   "require-dev": {
     "phpunit/phpunit": "^6"
