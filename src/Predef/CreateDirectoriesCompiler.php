@@ -69,7 +69,14 @@ class CreateDirectoriesCompiler extends AbstractCompiler
      */
     public function compile(CompilerContext $context)
     {
+        $skylineAppData = $context->getSkylineAppDataDirectory();
+
+        if(!file_exists($skylineAppData))
+            $this->makeDir($skylineAppData, $context->getLogger());
+
         foreach($this->getDirectoryNames() as $dirName) {
+            $dirName = "$skylineAppData/$dirName";
+
             if(file_exists($dirName) && !$this->removeDir($dirName, $context->getLogger())) {
                 continue;
             }
@@ -113,6 +120,8 @@ class CreateDirectoriesCompiler extends AbstractCompiler
     }
 
     /**
+     * The names of directories to create
+     * NOTE: The directories are created inside the Skyline CMS Application data directory. Use ../ to create directories outside (not recommended)
      * @return string[]
      */
     public function getDirectoryNames(): array
