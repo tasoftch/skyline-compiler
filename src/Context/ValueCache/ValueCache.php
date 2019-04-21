@@ -89,7 +89,7 @@ class ValueCache implements ValueCacheInterface, Countable
     {
         /** @var Config $dom */
         $dom = $this->_getDomain($domain);
-        return $dom->getValues();
+        return $dom->getAll();
     }
 
     /**

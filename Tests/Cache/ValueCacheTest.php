@@ -66,11 +66,38 @@ class ValueCacheTest extends TestCase
 
     public function testFetchValue()
     {
+        $cache = new ValueCache();
+        $cache->postValue(1, "test");
+        $cache->postValue(2, "test2");
+        $cache->postValue(3, "test", "domain");
 
+        $this->assertEquals(1, $cache->fetchValue("test"));
+        $this->assertNull($cache->fetchValue("nonexisting"));
+
+        $this->assertEquals(3, $cache->fetchValue("test", "domain"));
     }
 
     public function testFetchValues()
     {
+        $cache = new ValueCache();
+        $cache->postValue(1, "test");
+        $cache->postValue(2, "test2");
+        $cache->postValue(3, "test", "domain");
+        $cache->postValue(4, "test3", "domain");
+        $cache->postValue(5, "test2", "domain");
+        $cache->postValue(6, "test", "domain");
 
+        $this->assertCount(5, $cache);
+
+        $this->assertEquals([
+            'test' => 6,
+            'test3' => 4,
+            'test2' => 5
+        ], $cache->fetchValues("domain"));
+
+        $this->assertEquals([
+            'test' => 1,
+            'test2' => 2
+        ], $cache->fetchValues());
     }
 }
