@@ -51,6 +51,8 @@ class ComposerPackagesOrderCompiler extends AbstractCompiler
 
     private $scanDir = [];
 
+    const CACHE_PACKAGES_NAME = 'ordered-packages';
+
     /**
      * Reads the composer.json file directly or from directory and adds it to cache.
      *
@@ -112,7 +114,7 @@ class ComposerPackagesOrderCompiler extends AbstractCompiler
 
         $ordered = $dependencyCollection->getOrderedElements();
 
-        print_r($ordered);
+        $context->getValueCache()->postValue($ordered, static::CACHE_PACKAGES_NAME);
     }
 
     /**
