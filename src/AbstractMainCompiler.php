@@ -115,18 +115,24 @@ abstract class AbstractMainCompiler
 
 
     public function compile() {
-        $config = $this->getConfiguration();
-        if(!$this->getProject()) {
-            if(isset($config['project']) && ($proj = $config['project']) instanceof ProjectInterface) {
-                $this->setProject($proj);
-            } else {
-                $e = new CompilerException("Can not compile without project");
-                throw $e;
+        try {
+            $config = $this->getConfiguration();
+            if(!$this->getProject()) {
+                if(isset($config['project']) && ($proj = $config['project']) instanceof ProjectInterface) {
+                    $this->setProject($proj);
+                } else {
+                    $e = new CompilerException("Can not compile without project");
+                    throw $e;
+                }
             }
+
+            $domains = new Config([]);
+
+            $ctx = $this->getContext();
+
+
+        } catch (\Throwable $error) {
+            $this->getContext()->getLogger()->logError($error->getMessage());
         }
-
-        $domains = new Config([]);
-
-
     }
 }

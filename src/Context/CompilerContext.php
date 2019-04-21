@@ -36,8 +36,12 @@ namespace Skyline\Compiler\Context;
 
 
 use Skyline\Compiler\AbstractMainCompiler;
+use Skyline\Compiler\Context\FileCache\FileCacheInterface;
+use Skyline\Compiler\Context\FileCache\LocalFileCache;
 use Skyline\Compiler\Context\Logger\LoggerInterface;
 use Skyline\Compiler\Context\Logger\OutputLogger;
+use Skyline\Compiler\Context\ValueCache\ValueCache;
+use Skyline\Compiler\Context\ValueCache\ValueCacheInterface;
 
 class CompilerContext
 {
@@ -46,6 +50,12 @@ class CompilerContext
 
     /** @var LoggerInterface */
     private $logger;
+
+    /** @var ValueCacheInterface */
+    private $valueCache;
+
+    /** @var FileCacheInterface */
+    private $fileCache;
 
     /**
      * @return AbstractMainCompiler
@@ -79,6 +89,42 @@ class CompilerContext
     public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
+    }
+
+    /**
+     * @return FileCacheInterface
+     */
+    public function getFileCache(): FileCacheInterface
+    {
+        if(!$this->fileCache)
+            $this->fileCache = new LocalFileCache("./compiler-cache.php");
+        return $this->fileCache;
+    }
+
+    /**
+     * @param FileCacheInterface $fileCache
+     */
+    public function setFileCache(FileCacheInterface $fileCache): void
+    {
+        $this->fileCache = $fileCache;
+    }
+
+    /**
+     * @return ValueCacheInterface
+     */
+    public function getValueCache(): ValueCacheInterface
+    {
+        if(!$this->valueCache)
+            $this->valueCache = new ValueCache();
+        return $this->valueCache;
+    }
+
+    /**
+     * @param ValueCacheInterface $valueCache
+     */
+    public function setValueCache(ValueCacheInterface $valueCache): void
+    {
+        $this->valueCache = $valueCache;
     }
 
 
