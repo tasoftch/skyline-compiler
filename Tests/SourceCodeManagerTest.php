@@ -41,6 +41,7 @@
 
 use Skyline\Compiler\CompilerContext;
 use PHPUnit\Framework\TestCase;
+use Skyline\Compiler\Context\Code\SourceCodeManager;
 use Skyline\Compiler\Context\Code\TestsExcludingSourceCodeManager;
 use Skyline\Compiler\Project\Loader\XML;
 
@@ -57,6 +58,19 @@ class SourceCodeManagerTest extends TestCase
         $gen = $ctx->getSourceCodeManager()->yieldSourceFiles('/^AbstractContaineredCollection\.php$/i');
         foreach ($gen as $name => $file) {
            $this->assertEquals("vendor/tasoft/collection/src/AbstractContaineredCollection.php", $name);
+        }
+    }
+
+    public function testCustomFilePatjs() {
+        $xml = new XML(__DIR__ . "/Projects/project.xml");
+        /** @var MyProject $proj */
+        $proj = $xml->getProject();
+        $ctx = new CompilerContext($proj);
+
+        $ctx->setSourceCodeManager(new SourceCodeManager($ctx));
+
+        foreach($ctx->getSourceCodeManager()->yieldSourceFiles("/^\..*?$/i", ['Tests/Projects']) as $fn => $file) {
+            $this->assertEquals("Tests/Projects/.DS_Store", $fn);
         }
     }
 }

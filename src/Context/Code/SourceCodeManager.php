@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpParamsInspection */
+
 /**
  * BSD 3-Clause License
  *
@@ -74,63 +75,95 @@ class SourceCodeManager
      * NOTE: The first call takes longer to iterate over all source directories collecting the source files.
      *
      * @param string $fileNameRegex If null, yields all source files
+     * @param array $searchPaths Define in which search paths to look for files
      * @return Generator
      */
-    public function yieldSourceFiles(string $fileNameRegex = NULL) {
-        if(NULL === $this->sourceFiles) {
-            $this->sourceFiles = [];
+    public function yieldSourceFiles(string $fileNameRegex = NULL, array $searchPaths = NULL) {
+        $loadSearchPathIfNeeded = function($path, $name) {
+            if(!isset($this->sourceFiles[$name])) {
+                $this->sourceFiles[$name] = [];
 
-            $sources = [];
-            $addSrcDir = function($dirsOrDir) use (&$sources) {
-                if(is_array($dirsOrDir)) {
-                    foreach($dirsOrDir as $ss) {
-                        if(is_dir($ss))
-                            $sources[] = $ss;
-                    }
-                }
-                elseif(is_dir($dirsOrDir))
-                    $sources[] = $dirsOrDir;
-            };
-
-            //  Fetch source directories from configuration
-            if($src = CC::get($this->getContext()->getConfiguration(), CC::COMPILER_SOURCE_DIRECTORIES)) {
-                $addSrcDir($src);
-            }
-
-            if($dirs = $this->getContext()->getProjectSearchPaths( SearchPathAttribute::SEARCH_PATH_VENDOR ))
-                $addSrcDir($dirs);
-            if($dirs = $this->getContext()->getProjectSearchPaths( SearchPathAttribute::SEARCH_PATH_CLASSES ))
-                $addSrcDir($dirs);
-
-
-            $iterateOverDirectory = function(RecursiveDirectoryIterator $iterator) use (&$iterateOverDirectory) {
-                /** @var \SplFileInfo $item */
-                foreach($iterator as $item) {
-                    $file = new SourceFile($item);
-                    if($this->shouldIncludeFilename($file)) {
-                        if($item->isFile())
-                            $this->sourceFiles[ (string)$file ] = $file;
-                        elseif($iterator->hasChildren(true)) {
-                            /** @noinspection PhpParamsInspection */
-                            $iterateOverDirectory($iterator->getChildren());
+                $iterateOverDirectory = function(RecursiveDirectoryIterator $iterator) use (&$iterateOverDirectory) {
+                    /** @var \SplFileInfo $item */
+                    foreach($iterator as $item) {
+                        $file = new SourceFile($item);
+                        if($this->shouldIncludeFilename($file)) {
+                            if($item->isFile())
+                                yield (string)$file => $file;
+                            elseif($iterator->hasChildren(true)) {
+                                yield from $iterateOverDirectory($iterator->getChildren());
+                            }
+                        } else {
+                            $this->excludedFiles[ (string)$file ] = $file;
                         }
-                    } else {
-                        $this->excludedFiles[ (string)$file ] = $file;
                     }
+                };
+
+                $iterator = new RecursiveDirectoryIterator($path, RecursiveDirectoryIterator::SKIP_DOTS | RecursiveDirectoryIterator::FOLLOW_SYMLINKS);
+
+                foreach($iterateOverDirectory($iterator) as $fn => $file) {
+                    $this->sourceFiles[$name][$fn] = $file;
                 }
-            };
+            }
+        };
+
+        $addSrcDir = function($dirsOrDir, $kind) use (&$sources, $loadSearchPathIfNeeded) {
+            if(is_array($dirsOrDir)) {
+                foreach($dirsOrDir as $ss) {
+                    if(is_dir($ss))
+                        $loadSearchPathIfNeeded($ss, $kind);
+                }
+            }
+            elseif(is_dir($dirsOrDir))
+               $loadSearchPathIfNeeded($dirsOrDir, $kind);
+        };
 
 
-            foreach($sources as $source) {
-                $iterator = new RecursiveDirectoryIterator($source, RecursiveDirectoryIterator::SKIP_DOTS | RecursiveDirectoryIterator::FOLLOW_SYMLINKS);
-                $iterateOverDirectory($iterator);
+        if(NULL === $searchPaths) {
+            $searchPaths = [];
+
+            foreach($this->getDefaultSearchPaths() as $name => $dirsOrDir) {
+                if($dirsOrDir)
+                    $addSrcDir($dirsOrDir, $name);
+                $searchPaths[] = $name;
+            }
+        } else {
+            $defaults = $this->getDefaultSearchPaths();
+
+            foreach($searchPaths as $key => $value) {
+                if(is_numeric($key))
+                    $key = $value;
+
+                if(isset($defaults[$value])) {
+                    $value = $defaults[$value];
+                }
+
+                if(is_dir($value)) {
+                    $addSrcDir($value, $key);
+                } else {
+                    trigger_error("Search path $value not found", E_USER_WARNING);
+                }
             }
         }
 
-        foreach($this->sourceFiles as $fileName => $file) {
-            if(NULL == $fileNameRegex || preg_match($fileNameRegex, basename($fileName)))
-                yield $fileName => $file;
+
+        foreach($this->sourceFiles as $bank => $files) {
+            if(!in_array($bank, $searchPaths))
+                continue;
+
+            foreach($files as $fileName => $file) {
+                if(NULL == $fileNameRegex || preg_match($fileNameRegex, basename($fileName)))
+                    yield $fileName => $file;
+            }
         }
+    }
+
+    protected function getDefaultSearchPaths(): array {
+        return [
+            CC::COMPILER_SOURCE_DIRECTORIES => CC::get($this->getContext()->getConfiguration(), CC::COMPILER_SOURCE_DIRECTORIES),
+            SearchPathAttribute::SEARCH_PATH_VENDOR => $this->getContext()->getProjectSearchPaths( SearchPathAttribute::SEARCH_PATH_VENDOR ),
+            SearchPathAttribute::SEARCH_PATH_CLASSES => $this->getContext()->getProjectSearchPaths( SearchPathAttribute::SEARCH_PATH_CLASSES )
+        ];
     }
 
     /**
