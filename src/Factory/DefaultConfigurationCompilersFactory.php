@@ -32,56 +32,23 @@
  *
  */
 
-/**
- * BasicFactoryTest.php
- * skyline-compiler
- *
- * Created on 2019-04-21 23:45 by thomas
- */
+namespace Skyline\Compiler\Factory;
 
-use PHPUnit\Framework\TestCase;
-use Skyline\Compiler\Context\Logger\SilentLogger;
-use Skyline\Compiler\Factory\DefaultConfigurationCompilersFactory;
-use Skyline\Compiler\Project\ProjectInterface;
-use Symfony\Component\Filesystem\Filesystem;
-use Skyline\Compiler\CompilerContext;
-use Skyline\Compiler\Factory\BasicCompilersFactory;
-use Skyline\Compiler\Project\Loader\XML;
+use Skyline\Compiler\Predef\OrderedConfigurationCompiler;
 
-class BasicFactoryTest extends TestCase
+class DefaultConfigurationCompilersFactory extends AbstractExtendedCompilerFactory
 {
-    /** @var ProjectInterface */
-    public static $project;
-
-    public static function setUpBeforeClass()
+    protected function getCompilerDescriptions(): array
     {
-        parent::setUpBeforeClass();
-
-        $xml = new XML(__DIR__ . "/Projects/project.xml");
-        /** @var MyProject $proj */
-        self::$project = $xml->getProject();
-
-        $fs = new Filesystem();
-        $fs->remove(self::$project->getProjectRootDirectory() . "/SkylineAppData");
-    }
-
-    public function testFactory() {
-        $ctx = new CompilerContext(self::$project);
-        $ctx->setLogger($logger = new SilentLogger());
-
-        $ctx->addCompiler(new BasicCompilersFactory());
-
-        $ctx->addCompiler(new DefaultConfigurationCompilersFactory());
-
-        $ctx->compile();
-
-        $dappData = self::$project->getProjectRootDirectory() . "/SkylineAppData/";
-
-        $this->assertDirectoryExists($dappData);
-        $this->assertDirectoryExists("$dappData/Classes");
-        $this->assertDirectoryExists("$dappData/Compiled");
-        $this->assertDirectoryExists("$dappData/Config");
-
-        $this->assertFileExists("$dappData/Compiled/composer-packages.php");
+        return [
+            'main-config' => [
+                self::COMPILER_CLASS_KEY => OrderedConfigurationCompiler::class,
+                'target' => 'main.config.php',
+                'pattern' => '/^.*?\.config\.php$/i',
+                'default' => 'default.config.php',
+                "dev" => "default.config.dev.php",
+                "test" => "default.config.test.php",
+            ]
+        ];
     }
 }

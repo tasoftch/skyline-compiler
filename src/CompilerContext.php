@@ -234,12 +234,7 @@ class CompilerContext
     public function getProjectSearchPaths(string $name): array {
         $srcPaths = $this->getProject()->getAttribute(AttributeInterface::SEARCH_PATHS_ATTR_NAME);
         if($srcPaths instanceof SearchPathCollection) {
-            $paths = [];
-            foreach(($srcPaths->getSearchPaths($name) ?? []) as $path) {
-                $p = $this->getProject()->getProjectRootDirectory() . "/$path";
-                $paths[] = $p;
-            }
-            return $paths;
+            return $srcPaths->getSearchPaths($name) ?? [];
         }
         return [];
     }
