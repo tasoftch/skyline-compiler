@@ -32,56 +32,27 @@
  *
  */
 
-/**
- * BasicFactoryTest.php
- * skyline-compiler
- *
- * Created on 2019-04-21 23:45 by thomas
- */
+namespace Skyline\Compiler\Factory;
 
-use PHPUnit\Framework\TestCase;
-use Skyline\Compiler\Context\Logger\SilentLogger;
-use Skyline\Compiler\Factory\ConfigMainCompilerFactory;
-use Skyline\Compiler\Project\ProjectInterface;
-use Symfony\Component\Filesystem\Filesystem;
-use Skyline\Compiler\CompilerContext;
-use Skyline\Compiler\Factory\BasicCompilersFactory;
-use Skyline\Compiler\Project\Loader\XML;
+use Skyline\Compiler\Predef\ConfigurationCompiler;
+use Skyline\Compiler\Predef\OrderedConfigurationCompiler;
 
-class BasicFactoryTest extends TestCase
+class ConfigMainCompilerFactory extends AbstractExtendedCompilerFactory
 {
-    /** @var ProjectInterface */
-    public static $project;
-
-    public static function setUpBeforeClass()
+    protected function getCompilerDescriptions(): array
     {
-        parent::setUpBeforeClass();
-
-        $xml = new XML(__DIR__ . "/Projects/project.xml");
-        /** @var MyProject $proj */
-        self::$project = $xml->getProject();
-
-        $fs = new Filesystem();
-        $fs->remove(self::$project->getProjectRootDirectory() . "/SkylineAppData");
-    }
-
-    public function testFactory() {
-        $ctx = new CompilerContext(self::$project);
-        $ctx->setLogger($logger = new SilentLogger());
-
-        $ctx->addCompiler(new BasicCompilersFactory());
-
-        $ctx->addCompiler(new ConfigMainCompilerFactory());
-
-        $ctx->compile();
-
-        $dappData = self::$project->getProjectRootDirectory() . "/SkylineAppData/";
-
-        $this->assertDirectoryExists($dappData);
-        $this->assertDirectoryExists("$dappData/Classes");
-        $this->assertDirectoryExists("$dappData/Compiled");
-        $this->assertDirectoryExists("$dappData/Config");
-
-        $this->assertFileExists("$dappData/Compiled/composer-packages.php");
+        return [
+            'main-config' => [
+                self::COMPILER_CLASS_KEY                            => OrderedConfigurationCompiler::class,
+                ConfigurationCompiler::INFO_TARGET_FILENAME_KEY     => 'main.config.php',
+                ConfigurationCompiler::INFO_PATTERN_KEY             => '/^.*?\.config\.php$/i',
+                ConfigurationCompiler::INFO_CUSTOM_FILENAME_KEY     => 'default.config.php',
+                ConfigurationCompiler::INFO_DEV_FILENAME_KEY        => "default.config.dev.php",
+                ConfigurationCompiler::INFO_TEST_FILENAME_KEY       => "default.config.test.php",
+                self::COMPILER_DEPENDENCIES_KEY => [
+                    'composer-packages-order'
+                ]
+            ]
+        ];
     }
 }
