@@ -38,22 +38,32 @@ namespace Skyline\Compiler\Predef;
 use Generator;
 use Skyline\Compiler\CompilerContext;
 
+/**
+ * Orders all configuration files against their composer packages dependencies
+ *
+ * @package Skyline\Compiler\Predef
+ */
 class OrderedConfigurationCompiler extends ConfigurationCompiler
 {
     protected function yieldConfigurationFiles(CompilerContext $context): Generator
     {
         $files = [];
+        $packages = $context->getValueCache()->fetchValue(ComposerPackagesOrderCompiler::CACHE_PACKAGES_NAME);
+
         foreach(parent::yieldConfigurationFiles($context) as $file) {
             $pkg = $this->findComposerPackageName($file);
-            $files[$pkg][] = $file;
+            $idx = array_search($pkg, array_keys($packages));
+            if($idx === false)
+                $idx = PHP_INT_MAX;
+            $files[$idx][] = $file;
         }
 
+        ksort($files);
 
-        uksort($files, function($pkg) {
-
-        });
-
-        print_r($files);
+        foreach($files as $idx => $all) {
+            foreach($all as $file)
+                yield $file;
+        }
     }
 
     protected function findComposerPackageName($file) {
