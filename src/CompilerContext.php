@@ -34,7 +34,6 @@
 
 namespace Skyline\Compiler;
 
-use Iterator;
 use Skyline\Compiler\CompilerConfiguration as CC;
 use Skyline\Compiler\Context\Code\SourceCodeManager;
 use Skyline\Compiler\Context\FileCache\FileCacheInterface;
@@ -235,7 +234,12 @@ class CompilerContext
     public function getProjectSearchPaths(string $name): array {
         $srcPaths = $this->getProject()->getAttribute(AttributeInterface::SEARCH_PATHS_ATTR_NAME);
         if($srcPaths instanceof SearchPathCollection) {
-            return $srcPaths->getSearchPaths($name) ?? [];
+            $paths = [];
+            foreach(($srcPaths->getSearchPaths($name) ?? []) as $path) {
+                $p = $this->getProject()->getProjectRootDirectory() . "/$path";
+                $paths[] = $p;
+            }
+            return $paths;
         }
         return [];
     }
