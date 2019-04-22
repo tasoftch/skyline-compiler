@@ -35,27 +35,114 @@
 namespace Skyline\Compiler\Predef;
 
 
+use Generator;
 use Skyline\Compiler\AbstractCompiler;
+use Skyline\Compiler\CompilerConfiguration as CC;
+use Skyline\Compiler\CompilerConfiguration;
 use Skyline\Compiler\CompilerContext;
+use Skyline\Compiler\Context\Logger\LoggerInterface;
+use Skyline\Compiler\Exception\FileOrDirectoryNotFoundException;
+use Skyline\Compiler\Project\Attribute\AttributeInterface;
 use Skyline\Compiler\Project\Attribute\SearchPathAttribute;
+use TASoft\Config\Compiler\BadSourceException;
+use TASoft\Config\Compiler\Source\FileSource;
+use TASoft\Config\Compiler\Source\SourceContainer;
+use TASoft\Config\Compiler\StandardCompiler;
 
 class ConfigurationCompiler extends AbstractCompiler
 {
     private $info;
 
+    const INFO_TARGET_FILENAME_KEY = 'target';
+    const INFO_PATTERN_KEY = 'pattern';
+    const INFO_CUSTOM_FILENAME_KEY = 'default';
+    const INFO_DEV_FILENAME_KEY = 'dev';
+    const INFO_TEST_FILENAME_KEY = 'test';
+
+
     public function compile(CompilerContext $context)
     {
+        $sourceContainer = new SourceContainer();
+
+        $addFile = function($file) use ($sourceContainer, $context) {
+            if(is_file($file)) {
+                $context->getLogger()->logText("Source for %s found: %s", LoggerInterface::VERBOSITY_VERY, NULL, $this->getCompilerID(), $file);
+
+                try {
+                    $sourceContainer->addSource(new FileSource($file));
+                } catch (BadSourceException $e) {
+                    $context->getLogger()->logWarning("Source Error: %s", NULL, $e->getMessage());
+                }
+            } else {
+                $context->getLogger()->logWarning("Source not found: %s", NULL, $file);
+            }
+        };
+
+        foreach($this->yieldConfigurationFiles($context) as $file) {
+            $file = (string) $file;
+            $addFile($file);
+        }
+
+        if($defaultFile = $this->info[ static::INFO_CUSTOM_FILENAME_KEY ] ?? NULL) {
+            foreach($context->getProjectSearchPaths(SearchPathAttribute::SEARCH_PATH_USER_CONFIG) as $configPath) {
+                if(is_file($f = "$configPath/$defaultFile")) {
+                    $context->getLogger()->logText("DEFAULT for %s: %s", LoggerInterface::VERBOSITY_VERY, NULL, $this->getCompilerID(), $f);
+                    $addFile($f);
+                    break;
+                }
+            }
+        }
+
+        if(CC::get($context->getConfiguration(), CC::COMPILER_DEBUG) && ($defaultFile = $this->info[ static::INFO_DEV_FILENAME_KEY ] ?? NULL)) {
+            foreach($context->getProjectSearchPaths(SearchPathAttribute::SEARCH_PATH_USER_CONFIG) as $configPath) {
+                if(is_file($f = "$configPath/$defaultFile")) {
+                    $context->getLogger()->logText("DEV for %s: %s", LoggerInterface::VERBOSITY_VERY, NULL, $this->getCompilerID(), $f);
+                    $addFile($f);
+                    break;
+                }
+            }
+        }
+
+        if(CC::get($context->getConfiguration(), CC::COMPILER_TEST) && ($defaultFile = $this->info[ static::INFO_TEST_FILENAME_KEY ] ?? NULL)) {
+            foreach($context->getProjectSearchPaths(SearchPathAttribute::SEARCH_PATH_USER_CONFIG) as $configPath) {
+                if(is_file($f = "$configPath/$defaultFile")) {
+                    $context->getLogger()->logText("TEST for %s: %s", LoggerInterface::VERBOSITY_VERY, NULL, $this->getCompilerID(), $f);
+                    $addFile($f);
+                    break;
+                }
+            }
+        }
+
+        $compiler = new StandardCompiler();
+        $compiler->setSource($sourceContainer);
+
+        $target = $this->info[ static::INFO_TARGET_FILENAME_KEY ];
+        $cdir = $context->getSkylineAppDirectory(CompilerConfiguration::SKYLINE_DIR_COMPILED);
+
+        $compiler->setTarget("$cdir/$target");
+        $compiler->compile();
+    }
+
+    protected function yieldConfigurationFiles(CompilerContext $context): Generator{
         $configDirs = [];
         foreach($context->getProjectSearchPaths(SearchPathAttribute::SEARCH_PATH_USER_CONFIG) as $configDir) {
             $configDirs[] = (string)$configDir;
         }
 
-        print_r($configDirs);
+        $pattern = $this->info[ static::INFO_PATTERN_KEY ];
+        foreach($context->getSourceCodeManager()->yieldSourceFiles($pattern, $configDirs) as $fileName => $file) {
+            yield $fileName => $file;
+        }
     }
 
-    public function __construct(string $compilerID, $arguments)
+    /**
+     * ConfigurationCompiler constructor.
+     * @param string $compilerID
+     * @param $info
+     */
+    public function __construct(string $compilerID, $info)
     {
         parent::__construct($compilerID);
-        $this->info = $arguments;
+        $this->info = $info;
     }
 }

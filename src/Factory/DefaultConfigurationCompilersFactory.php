@@ -34,6 +34,7 @@
 
 namespace Skyline\Compiler\Factory;
 
+use Skyline\Compiler\Predef\ConfigurationCompiler;
 use Skyline\Compiler\Predef\OrderedConfigurationCompiler;
 
 class DefaultConfigurationCompilersFactory extends AbstractExtendedCompilerFactory
@@ -42,12 +43,15 @@ class DefaultConfigurationCompilersFactory extends AbstractExtendedCompilerFacto
     {
         return [
             'main-config' => [
-                self::COMPILER_CLASS_KEY => OrderedConfigurationCompiler::class,
-                'target' => 'main.config.php',
-                'pattern' => '/^.*?\.config\.php$/i',
-                'default' => 'default.config.php',
-                "dev" => "default.config.dev.php",
-                "test" => "default.config.test.php",
+                self::COMPILER_CLASS_KEY                            => OrderedConfigurationCompiler::class,
+                ConfigurationCompiler::INFO_TARGET_FILENAME_KEY     => 'main.config.php',
+                ConfigurationCompiler::INFO_PATTERN_KEY             => '/^.*?\.config\.php$/i',
+                ConfigurationCompiler::INFO_CUSTOM_FILENAME_KEY     => 'default.config.php',
+                ConfigurationCompiler::INFO_DEV_FILENAME_KEY        => "default.config.dev.php",
+                ConfigurationCompiler::INFO_TEST_FILENAME_KEY       => "default.config.test.php",
+                self::COMPILER_DEPENDENCIES_KEY => [
+                    'composer-packages-order'
+                ]
             ]
         ];
     }

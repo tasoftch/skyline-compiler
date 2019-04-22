@@ -43,7 +43,7 @@
     </attributes>
     <searchPaths>
         <dir type="config">vendor/skyline</dir>
-        <dir type="config">SkylineAppData/Config</dir>
+        <dir type="config">Tests/Config</dir>
         <dir type="vendor">vendor</dir>
         <dir type="modules">SkylineAppData/Modules</dir>
         <dir type="classes">SkylineAppData/Modules</dir>
