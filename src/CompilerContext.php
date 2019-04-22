@@ -44,6 +44,8 @@ use Skyline\Compiler\Context\Logger\OutputLogger;
 use Skyline\Compiler\Context\ValueCache\ValueCache;
 use Skyline\Compiler\Context\ValueCache\ValueCacheInterface;
 use Skyline\Compiler\Exception\CompilerException;
+use Skyline\Compiler\Project\Attribute\AttributeInterface;
+use Skyline\Compiler\Project\Attribute\SearchPathCollection;
 use Skyline\Compiler\Project\ProjectInterface;
 use Skyline\Kernel\Service\Error\AbstractErrorHandlerService;
 use TASoft\Collection\DependencyCollection;
@@ -222,6 +224,20 @@ class CompilerContext
             return $this->getSkylineAppDataDirectory() . "/$name";
         }
         return NULL;
+    }
+
+    /**
+     * Obtaining search paths from project
+     *
+     * @param string $name
+     * @return array
+     */
+    public function getProjectSearchPaths(string $name): array {
+        $srcPaths = $this->getProject()->getAttribute(AttributeInterface::SEARCH_PATHS_ATTR_NAME);
+        if($srcPaths instanceof SearchPathCollection) {
+            return $srcPaths->getSearchPaths($name) ?? [];
+        }
+        return [];
     }
 
     /**
