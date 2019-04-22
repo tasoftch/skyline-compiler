@@ -39,9 +39,7 @@ use Generator;
 use RecursiveDirectoryIterator;
 use Skyline\Compiler\CompilerConfiguration as CC;
 use Skyline\Compiler\CompilerContext;
-use Skyline\Compiler\Project\Attribute\AttributeInterface;
 use Skyline\Compiler\Project\Attribute\SearchPathAttribute;
-use Skyline\Compiler\Project\Attribute\SearchPathCollection;
 
 class SourceCodeManager
 {
@@ -99,16 +97,10 @@ class SourceCodeManager
                 $addSrcDir($src);
             }
 
-            /** @var SearchPathCollection $searchPaths */
-            $searchPaths = $this->getContext()->getProject()->getAttribute( AttributeInterface::SEARCH_PATHS_ATTR_NAME );
-            if($searchPaths instanceof SearchPathCollection) {
-                if($dirs = $searchPaths->getSearchPaths( SearchPathAttribute::SEARCH_PATH_VENDOR )) {
-                    $addSrcDir($dirs);
-                }
-                if($dirs = $searchPaths->getSearchPaths( SearchPathAttribute::SEARCH_PATH_CLASSES )) {
-                    $addSrcDir($dirs);
-                }
-            }
+            if($dirs = $this->getContext()->getProjectSearchPaths( SearchPathAttribute::SEARCH_PATH_VENDOR ))
+                $addSrcDir($dirs);
+            if($dirs = $this->getContext()->getProjectSearchPaths( SearchPathAttribute::SEARCH_PATH_CLASSES ))
+                $addSrcDir($dirs);
 
 
             $iterateOverDirectory = function(RecursiveDirectoryIterator $iterator) use (&$iterateOverDirectory) {
