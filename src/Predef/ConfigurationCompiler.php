@@ -113,16 +113,33 @@ class ConfigurationCompiler extends AbstractCompiler
             }
         }
 
-        $compiler = new StandardCompiler();
-        $compiler->setSource($sourceContainer);
-
         $target = $this->info[ static::INFO_TARGET_FILENAME_KEY ];
         $cdir = $context->getSkylineAppDirectory(CompilerConfiguration::SKYLINE_DIR_COMPILED);
 
-        $compiler->setTarget("$cdir/$target");
+        $this->compileConfiguration($sourceContainer, "$cdir/$target", $context);
+    }
+
+    /**
+     * Compile the configuration now
+     *
+     * @param \Traversable $source
+     * @param string $target
+     * @param CompilerContext $context
+     */
+    protected function compileConfiguration(\Traversable $source, string $target, CompilerContext $context) {
+        $compiler = new StandardCompiler();
+        $compiler->setSource($source);
+
+        $compiler->setTarget($target);
         $compiler->compile();
     }
 
+    /**
+     * Override to adjust configuration files and order
+     *
+     * @param CompilerContext $context
+     * @return Generator
+     */
     protected function yieldConfigurationFiles(CompilerContext $context): Generator{
         $configDirs = [];
         foreach($context->getProjectSearchPaths(SearchPathAttribute::SEARCH_PATH_USER_CONFIG) as $configDir) {
