@@ -25,6 +25,7 @@
     "symfony/filesystem": "dev-master"
   },
   "require-dev": {
-    "phpunit/phpunit": "^6"
+    "phpunit/phpunit": "^6",
+    "skyline/core-application" : "dev-master"
   }
 }

@@ -74,6 +74,7 @@ class SilentLogger implements LoggerInterface
         $record = func_get_args();
         array_unshift($record, "Exception");
         $this->records[] = $record;
+        throw $exception;
     }
 
     /**

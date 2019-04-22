@@ -147,7 +147,12 @@ class ConfigurationCompiler extends AbstractCompiler
         }
 
         $pattern = $this->info[ static::INFO_PATTERN_KEY ];
+        $defaultFile = $this->info[ static::INFO_CUSTOM_FILENAME_KEY ] ?? NULL;
+
         foreach($context->getSourceCodeManager()->yieldSourceFiles($pattern, $configDirs) as $fileName => $file) {
+            if(basename($fileName) == $defaultFile)
+                continue;
+
             yield $fileName => $file;
         }
     }

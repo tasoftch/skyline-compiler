@@ -35,7 +35,33 @@
 namespace Skyline\Compiler\Predef;
 
 
+use Generator;
+use Skyline\Compiler\CompilerContext;
+
 class OrderedConfigurationCompiler extends ConfigurationCompiler
 {
+    protected function yieldConfigurationFiles(CompilerContext $context): Generator
+    {
+        $files = [];
+        foreach(parent::yieldConfigurationFiles($context) as $file) {
+            $pkg = $this->findComposerPackageName($file);
+            $files[$pkg][] = $file;
+        }
 
+
+        uksort($files, function($pkg) {
+
+        });
+
+        print_r($files);
+    }
+
+    protected function findComposerPackageName($file) {
+        while(strlen($file = dirname($file)) > 2) {
+            if(is_file("$file/composer.json")) {
+                return json_decode( file_get_contents("$file/composer.json"), true )["name"] ?? NULL;
+            }
+        }
+        return NULL;
+    }
 }
