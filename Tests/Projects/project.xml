@@ -35,11 +35,13 @@
     <arguments />
     <directory>./</directory>
     <attributes>
+        <attr name="title">Test Website</attr>
         <attr name="data">SkylineAppData</attr>
         <attr name="excluded" type="list">
             <dir>Tests</dir>
         </attr>
         <attr name="HTTPS" type="bool">1</attr>
+        <attr name="appRoot">../</attr>
     </attributes>
     <searchPaths>
         <dir type="config">vendor/skyline</dir>

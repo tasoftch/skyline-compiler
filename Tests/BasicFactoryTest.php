@@ -43,7 +43,7 @@ use PHPUnit\Framework\TestCase;
 use Skyline\Compiler\Context\Logger\SilentLogger;
 use Skyline\Compiler\Factory\ConfigMainCompilerFactory;
 use Skyline\Compiler\Factory\CreateHTAccessCompilerFactory;
-use Skyline\Compiler\Predef\HTAccessFileCompiler;
+use Skyline\Compiler\Factory\SkylineEntryPointCompilerFactory;
 use Skyline\Compiler\Project\ProjectInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Skyline\Compiler\CompilerContext;
@@ -71,8 +71,8 @@ class BasicFactoryTest extends TestCase
         $ctx = new CompilerContext(self::$project);
         $ctx->setLogger($logger = new SilentLogger());
 
+        $ctx->addCompiler(new SkylineEntryPointCompilerFactory());
         $ctx->addCompiler(new BasicCompilersFactory());
-
         $ctx->addCompiler(new ConfigMainCompilerFactory());
         $ctx->addCompiler(new CreateHTAccessCompilerFactory());
 

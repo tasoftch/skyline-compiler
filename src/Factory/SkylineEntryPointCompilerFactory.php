@@ -32,27 +32,22 @@
  *
  */
 
-namespace Skyline\Compiler\Project\Attribute;
+namespace Skyline\Compiler\Factory;
 
 
-interface AttributeInterface
+use Skyline\Compiler\Predef\SkylineEntryPointFileCompiler;
+
+class SkylineEntryPointCompilerFactory extends AbstractExtendedCompilerFactory
 {
-    const TITLE_ATTR_NAME = 'title';
-    const DESCRIPTION_ATTR_NAME = 'description';
-    const SEARCH_PATHS_ATTR_NAME = 'searchPaths';
-    const HOSTS_ATTR_NAME = 'hosts';
-    const WHITELIST_ATTR_NAME = 'whitelist';
-    const FILTER_ATTR_NAME = 'filters';
-    // From public directory into application directory, relative path
-    const APP_ROOT_NAME = 'appRoot';
-
-    /**
-     * @return string
-     */
-    public function getName(): string;
-
-    /**
-     * @return mixed
-     */
-    public function getValue();
+    protected function getCompilerDescriptions(): array
+    {
+        return [
+            'skyline-entry' => [
+                self::COMPILER_CLASS_KEY => SkylineEntryPointFileCompiler::class,
+                self::COMPILER_DEPENDENCIES_KEY => [
+                    'create-public-directory'
+                ]
+            ]
+        ];
+    }
 }
