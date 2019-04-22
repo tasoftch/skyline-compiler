@@ -38,6 +38,7 @@ namespace Skyline\Compiler\Factory;
 use Skyline\Compiler\CompilerConfiguration as CC;
 use Skyline\Compiler\Predef\ComposerPackagesOrderCompiler;
 use Skyline\Compiler\Predef\CreateDirectoriesIfNotExistCompiler;
+use Skyline\Compiler\Predef\CreatePublicDirectoryCompiler;
 
 class BasicCompilersFactory extends AbstractExtendedCompilerFactory
 {
@@ -54,6 +55,7 @@ class BasicCompilersFactory extends AbstractExtendedCompilerFactory
                     ]
                 ]
             ],
+            'create-public-directory' => CreatePublicDirectoryCompiler::class,
             'composer-packages-order' => [
                 self::COMPILER_CLASS_KEY => ComposerPackagesOrderCompiler::class,
                 self::COMPILER_ARGUMENTS_KEY => [

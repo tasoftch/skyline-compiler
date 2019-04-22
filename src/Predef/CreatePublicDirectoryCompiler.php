@@ -32,46 +32,33 @@
  *
  */
 
-/**
- * SourceCodeManagerTest.php
- * skyline-compiler
- *
- * Created on 2019-04-21 21:22 by thomas
- */
+namespace Skyline\Compiler\Predef;
+
 
 use Skyline\Compiler\CompilerContext;
-use PHPUnit\Framework\TestCase;
-use Skyline\Compiler\Context\Code\SourceCodeManager;
-use Skyline\Compiler\Context\Code\TestsExcludingSourceCodeManager;
-use Skyline\Compiler\Project\Loader\XML;
 
-class SourceCodeManagerTest extends TestCase
+class CreatePublicDirectoryCompiler extends CreateDirectoriesCompiler
 {
-    public function testSourceCodeManager() {
-        $xml = new XML(__DIR__ . "/Projects/project.xml");
-        /** @var MyProject $proj */
-        $proj = $xml->getProject();
-        $ctx = new CompilerContext($proj);
+    /** @var CompilerContext */
+    private $context;
 
-        $ctx->setSourceCodeManager(new TestsExcludingSourceCodeManager($ctx));
-
-        $gen = $ctx->getSourceCodeManager()->yieldSourceFiles('/^AbstractContaineredCollection\.php$/i');
-        foreach ($gen as $name => $file) {
-           $this->assertEquals("vendor/tasoft/collection/src/AbstractContaineredCollection.php", $name);
-        }
+    public function compile(CompilerContext $context)
+    {
+        $this->context = $context;
+        parent::compile($context);
     }
 
-    public function testCustomFilePatjs() {
-        $xml = new XML(__DIR__ . "/Projects/project.xml");
-        /** @var MyProject $proj */
-        $proj = $xml->getProject();
-        $ctx = new CompilerContext($proj);
+    public function getDirectoryNames(): array
+    {
+        $rel = SkyRelativePath($this->context->getProject()->getProjectRootDirectory() . "/_", $this->context->getProject()->getProjectPublicDirectory());
 
-        $ctx->setSourceCodeManager(new SourceCodeManager($ctx));
+        return [
+            "../$rel"
+        ];
+    }
 
-        foreach($ctx->getSourceCodeManager()->yieldSourceFiles("/^\..*?$/i", ['Tests/Projects']) as $fn => $file) {
-            $this->assertEquals("Tests/Projects/.DS_Store", $fn);
-            break;
-        }
+    public function __construct(string $compilerID)
+    {
+        parent::__construct($compilerID, []);
     }
 }

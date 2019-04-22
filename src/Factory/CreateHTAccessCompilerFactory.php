@@ -32,46 +32,23 @@
  *
  */
 
-/**
- * SourceCodeManagerTest.php
- * skyline-compiler
- *
- * Created on 2019-04-21 21:22 by thomas
- */
+namespace Skyline\Compiler\Factory;
 
-use Skyline\Compiler\CompilerContext;
-use PHPUnit\Framework\TestCase;
-use Skyline\Compiler\Context\Code\SourceCodeManager;
-use Skyline\Compiler\Context\Code\TestsExcludingSourceCodeManager;
-use Skyline\Compiler\Project\Loader\XML;
 
-class SourceCodeManagerTest extends TestCase
+use Skyline\Compiler\Predef\HTAccessFileCompiler;
+
+class CreateHTAccessCompilerFactory extends AbstractExtendedCompilerFactory
 {
-    public function testSourceCodeManager() {
-        $xml = new XML(__DIR__ . "/Projects/project.xml");
-        /** @var MyProject $proj */
-        $proj = $xml->getProject();
-        $ctx = new CompilerContext($proj);
-
-        $ctx->setSourceCodeManager(new TestsExcludingSourceCodeManager($ctx));
-
-        $gen = $ctx->getSourceCodeManager()->yieldSourceFiles('/^AbstractContaineredCollection\.php$/i');
-        foreach ($gen as $name => $file) {
-           $this->assertEquals("vendor/tasoft/collection/src/AbstractContaineredCollection.php", $name);
-        }
+    protected function getCompilerDescriptions(): array
+    {
+        return [
+            "create-htaccess" => [
+                self::COMPILER_CLASS_KEY => HTAccessFileCompiler::class,
+                self::COMPILER_DEPENDENCIES_KEY => [
+                    'create-public-directory'
+                ]
+            ]
+        ];
     }
 
-    public function testCustomFilePatjs() {
-        $xml = new XML(__DIR__ . "/Projects/project.xml");
-        /** @var MyProject $proj */
-        $proj = $xml->getProject();
-        $ctx = new CompilerContext($proj);
-
-        $ctx->setSourceCodeManager(new SourceCodeManager($ctx));
-
-        foreach($ctx->getSourceCodeManager()->yieldSourceFiles("/^\..*?$/i", ['Tests/Projects']) as $fn => $file) {
-            $this->assertEquals("Tests/Projects/.DS_Store", $fn);
-            break;
-        }
-    }
 }

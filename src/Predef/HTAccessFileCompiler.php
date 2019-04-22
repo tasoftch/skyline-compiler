@@ -32,46 +32,34 @@
  *
  */
 
-/**
- * SourceCodeManagerTest.php
- * skyline-compiler
- *
- * Created on 2019-04-21 21:22 by thomas
- */
+namespace Skyline\Compiler\Predef;
 
+
+use Skyline\Compiler\AbstractCompiler;
 use Skyline\Compiler\CompilerContext;
-use PHPUnit\Framework\TestCase;
-use Skyline\Compiler\Context\Code\SourceCodeManager;
-use Skyline\Compiler\Context\Code\TestsExcludingSourceCodeManager;
-use Skyline\Compiler\Project\Loader\XML;
+use Skyline\Compiler\Context\Logger\LoggerInterface;
 
-class SourceCodeManagerTest extends TestCase
+class HTAccessFileCompiler extends AbstractCompiler
 {
-    public function testSourceCodeManager() {
-        $xml = new XML(__DIR__ . "/Projects/project.xml");
-        /** @var MyProject $proj */
-        $proj = $xml->getProject();
-        $ctx = new CompilerContext($proj);
+    public function compile(CompilerContext $context)
+    {
+        $attr  =$context->getProject()->getAttribute('HTTPS');
 
-        $ctx->setSourceCodeManager(new TestsExcludingSourceCodeManager($ctx));
+        $content = "# Skyline CMS HTAccess Compiler\nRewriteEngine on\n\n";
 
-        $gen = $ctx->getSourceCodeManager()->yieldSourceFiles('/^AbstractContaineredCollection\.php$/i');
-        foreach ($gen as $name => $file) {
-           $this->assertEquals("vendor/tasoft/collection/src/AbstractContaineredCollection.php", $name);
+        if(!$attr || $attr->getValue()) {
+            $context->getLogger()->logText("Create .htaccess with HTTPS", LoggerInterface::VERBOSITY_NORMAL);
+            $content .= "RewriteCond %{HTTPS} !on
+RewriteRule .* https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]\n";
+        } else {
+            $context->getLogger()->logText("Create .htaccess without HTTPS", LoggerInterface::VERBOSITY_NORMAL);
         }
+
+        $content .= "RewriteCond %{REQUEST_URI} !skyline\.php [NC]
+RewriteRule ^.*$ /skyline.php [L,QSA]\n";
+
+        $fn = $context->getProject()->getProjectPublicDirectory() . "/.htaccess";
+        file_put_contents($fn, $content);
     }
 
-    public function testCustomFilePatjs() {
-        $xml = new XML(__DIR__ . "/Projects/project.xml");
-        /** @var MyProject $proj */
-        $proj = $xml->getProject();
-        $ctx = new CompilerContext($proj);
-
-        $ctx->setSourceCodeManager(new SourceCodeManager($ctx));
-
-        foreach($ctx->getSourceCodeManager()->yieldSourceFiles("/^\..*?$/i", ['Tests/Projects']) as $fn => $file) {
-            $this->assertEquals("Tests/Projects/.DS_Store", $fn);
-            break;
-        }
-    }
 }
