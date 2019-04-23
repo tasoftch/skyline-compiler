@@ -259,7 +259,7 @@ class CompilerContext
                     $depCollection->add($id, $compiler);
             }
             elseif($compiler instanceof CompilerFactoryInterface) {
-                $compiler->registerCompilerInstances($depCollection);
+                $compiler->registerCompilerInstances($depCollection, $this);
             }
         }
 

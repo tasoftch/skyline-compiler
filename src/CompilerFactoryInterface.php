@@ -43,7 +43,8 @@ interface CompilerFactoryInterface
      * The factory should add all its compilers to the dependency collection
      *
      * @param DependencyCollection $dependencyCollection
+     * @param CompilerContext $context
      * @return void
      */
-    public function registerCompilerInstances(DependencyCollection $dependencyCollection);
+    public function registerCompilerInstances(DependencyCollection $dependencyCollection, CompilerContext $context);
 }

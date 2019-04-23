@@ -34,37 +34,18 @@
 
 namespace Skyline\Compiler\Factory;
 
-
 use Skyline\Compiler\CompilerContext;
-use Skyline\Compiler\CompilerFactoryInterface;
-use Skyline\Compiler\CompilerInterface;
 use TASoft\Collection\DependencyCollection;
 
-/**
- * Uses a list of class names to create the compilers
- *
- * @package Skyline\Compiler\Factory
- */
-abstract class AbstractBasicCompilerFactory implements CompilerFactoryInterface
+class FindPackageCompilersFactory extends AbstractExtendedCompilerFactory
 {
-    /**
-     * @inheritDoc
-     */
     public function registerCompilerInstances(DependencyCollection $dependencyCollection, CompilerContext $context)
     {
-        foreach($this->getCompilerDescriptions() as $key => $class) {
-            /** @var CompilerInterface $compiler */
-            $compiler = new $class($key);
-            $dependencyCollection->add($key, $compiler, $compiler->getDependsOnCompilerIDs());
-        }
+
     }
 
-    /**
-     * Returns the compiler classes and ids
-     * @return array
-     * @example [
-     *      'My-Compiler-ID' => My\Compiler::class  // Passes the array's key into the compiler's constructor
-     * ]
-     */
-    abstract protected function getCompilerDescriptions(): array;
+    protected function getCompilerDescriptions(): array
+    {
+        return [];
+    }
 }

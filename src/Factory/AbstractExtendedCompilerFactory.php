@@ -34,6 +34,7 @@
 
 namespace Skyline\Compiler\Factory;
 
+use Skyline\Compiler\CompilerContext;
 use Skyline\Compiler\CompilerInterface;
 use TASoft\Collection\DependencyCollection;
 
@@ -55,7 +56,7 @@ abstract class AbstractExtendedCompilerFactory extends AbstractBasicCompilerFact
     /**
      * @inheritDoc
      */
-    public function registerCompilerInstances(DependencyCollection $dependencyCollection)
+    public function registerCompilerInstances(DependencyCollection $dependencyCollection, CompilerContext $context)
     {
         foreach($this->getCompilerDescriptions() as $className => $description) {
             $compiler = $this->instantiateCompiler($className, $description);
