@@ -57,7 +57,9 @@ class FindPackageCompilersFactory extends AbstractExtendedCompilerFactory
      */
     public function registerCompilerInstances(DependencyCollection $dependencyCollection, CompilerContext $context)
     {
-
+        foreach($context->getSourceCodeManager()->yieldSourceFiles($this->getCompilerFilePattern(), $this->getSearchPaths()) as $file) {
+            print_r($file);
+        }
     }
 
     /**
@@ -74,6 +76,22 @@ class FindPackageCompilersFactory extends AbstractExtendedCompilerFactory
     public function setCompilerFilePattern(string $compilerFilePattern): void
     {
         $this->compilerFilePattern = $compilerFilePattern;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCompilerFilePattern(): string
+    {
+        return $this->compilerFilePattern;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getSearchPaths(): array
+    {
+        return $this->searchPaths;
     }
 
     /**

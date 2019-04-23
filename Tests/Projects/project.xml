@@ -47,9 +47,11 @@
         <dir type="config">vendor/skyline</dir>
         <dir type="config">Tests/Config</dir>
         <dir type="vendor">vendor</dir>
+        <!--
         <dir type="modules">SkylineAppData/Modules</dir>
         <dir type="classes">SkylineAppData/Modules</dir>
         <dir type="classes">SkylineAppData/Classes</dir>
+        -->
     </searchPaths>
     <CORS>
         <host name="www.example.dev" />

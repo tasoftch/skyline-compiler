@@ -108,14 +108,22 @@ class SourceCodeManager
         };
 
         $addSrcDir = function($dirsOrDir, $kind) use (&$sources, $loadSearchPathIfNeeded) {
+            $notFound = function($value) {
+                trigger_error("Search path $value not found", E_USER_WARNING);
+            };
+
             if(is_array($dirsOrDir)) {
                 foreach($dirsOrDir as $ss) {
                     if(is_dir($ss))
                         $loadSearchPathIfNeeded($ss, $kind);
+                    else
+                        $notFound($ss);
                 }
             }
             elseif(is_dir($dirsOrDir))
                $loadSearchPathIfNeeded($dirsOrDir, $kind);
+            else
+                $notFound($dirsOrDir);
         };
 
 
@@ -138,11 +146,7 @@ class SourceCodeManager
                     $value = $defaults[$value];
                 }
 
-                if(is_dir($value)) {
-                    $addSrcDir($value, $key);
-                } else {
-                    trigger_error("Search path $value not found", E_USER_WARNING);
-                }
+                $addSrcDir($value, $key);
             }
         }
 
