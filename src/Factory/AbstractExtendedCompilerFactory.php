@@ -34,6 +34,7 @@
 
 namespace Skyline\Compiler\Factory;
 
+use Skyline\Compiler\CompilerInterface;
 use TASoft\Collection\DependencyCollection;
 
 /**
@@ -57,26 +58,38 @@ abstract class AbstractExtendedCompilerFactory extends AbstractBasicCompilerFact
     public function registerCompilerInstances(DependencyCollection $dependencyCollection)
     {
         foreach($this->getCompilerDescriptions() as $className => $description) {
-            if(is_array($description)) {
-                $class = $description[ self::COMPILER_CLASS_KEY ] ?? $className;
-                if(!isset($description[ self::COMPILER_ID_KEY ]))
-                    $description[ self::COMPILER_ID_KEY ] = $className;
+            $compiler = $this->instantiateCompiler($className, $description);
 
-                $id = $description[ self::COMPILER_ID_KEY ];
-                if($args = $description[ self::COMPILER_ARGUMENTS_KEY ] ?? NULL) {
-                    $compiler = new $class($id, ...array_values($args));
-                } else {
-                    $compiler = new $class($id, $description);
-                }
+            $id = $description[ self::COMPILER_ID_KEY ];
+            $deps = $description[ self::COMPILER_DEPENDENCIES_KEY ] ?? [];
 
-                $id = $description[ self::COMPILER_ID_KEY ];
-                $deps = $description[ self::COMPILER_DEPENDENCIES_KEY ] ?? [];
+            $dependencyCollection->add($id, $compiler, $deps);
+        }
+    }
 
-                $dependencyCollection->add($id, $compiler, $deps);
+    /**
+     * Method is called with the key and value pair of compiler description. See getCompilerDescriptions to learn how it is formatted.
+     *
+     * @param string $className
+     * @param $description
+     * @return CompilerInterface
+     * @see AbstractExtendedCompilerFactory::getCompilerDescriptions()
+     */
+    protected function instantiateCompiler(string &$className, &$description): CompilerInterface {
+        if(is_array($description)) {
+            $class = $description[ self::COMPILER_CLASS_KEY ] ?? $className;
+            if(!isset($description[ self::COMPILER_ID_KEY ]))
+                $description[ self::COMPILER_ID_KEY ] = $className;
+
+            $id = $description[ self::COMPILER_ID_KEY ];
+            if($args = $description[ self::COMPILER_ARGUMENTS_KEY ] ?? NULL) {
+                return new $class($id, ...array_values($args));
             } else {
-                // $className is compiler id and $description is class name
-                $dependencyCollection->add($className, new $description($className));
+                return new $class($id, $description);
             }
+        } else {
+            // $className is compiler id and $description is class name
+            return new $description($className);
         }
     }
 
