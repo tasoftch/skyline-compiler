@@ -35,17 +35,63 @@
 namespace Skyline\Compiler\Factory;
 
 use Skyline\Compiler\CompilerContext;
+use Skyline\Compiler\Project\Attribute\SearchPathAttribute;
 use TASoft\Collection\DependencyCollection;
 
+/**
+ * Use this compiler to search files in your project containing same data structure as returned from getCompilerDescriptions
+ * Then load this data by default extended factory behaviour.
+ *
+ * @package Skyline\Compiler\Factory
+ * @see AbstractExtendedCompilerFactory::getCompilerDescriptions()
+ */
 class FindPackageCompilersFactory extends AbstractExtendedCompilerFactory
 {
+    /** @var string[] */
+    private $searchPaths;
+    /** @var string */
+    private $compilerFilePattern;
+
+    /**
+     * @inheritDoc
+     */
     public function registerCompilerInstances(DependencyCollection $dependencyCollection, CompilerContext $context)
     {
 
     }
 
+    /**
+     * @param string[] $searchPaths
+     */
+    public function setSearchPaths(array $searchPaths): void
+    {
+        $this->searchPaths = $searchPaths;
+    }
+
+    /**
+     * @param string $compilerFilePattern
+     */
+    public function setCompilerFilePattern(string $compilerFilePattern): void
+    {
+        $this->compilerFilePattern = $compilerFilePattern;
+    }
+
+    /**
+     * Do not return nothing because this method won't be called.
+     */
     protected function getCompilerDescriptions(): array
     {
         return [];
+    }
+
+    /**
+     * FindPackageCompilersFactory constructor.
+     * @param array|NULL $searchPaths
+     * @param string $compilerFilePattern
+     */
+    public function __construct(array $searchPaths = NULL, string $compilerFilePattern = '/^compiler\.cfg\.php$/i')
+    {
+        $this->searchPaths = $searchPaths === NULL ? [SearchPathAttribute::SEARCH_PATH_VENDOR] : $searchPaths;
+        $this->compilerFilePattern = $compilerFilePattern;
     }
 }
