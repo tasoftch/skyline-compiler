@@ -46,4 +46,12 @@ interface MutableProjectInterface extends ProjectInterface
      * @return void
      */
     public function setAttribute(AttributeInterface $attribute);
+
+    /**
+     * Returns true if an attribute exists
+     *
+     * @param string $attributeName
+     * @return bool
+     */
+    public function hasAttribute(string $attributeName): bool;
 }

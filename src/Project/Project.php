@@ -108,4 +108,14 @@ class Project implements ProjectInterface, MutableProjectInterface
     {
         $this->attributes->addAttribute($attribute);
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function hasAttribute(string $attributeName): bool
+    {
+        return $this->attributes->hasAttribute($attributeName);
+    }
+
+
 }

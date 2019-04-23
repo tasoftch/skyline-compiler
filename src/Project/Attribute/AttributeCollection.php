@@ -59,6 +59,16 @@ class AttributeCollection extends Attribute implements AttributeCollectionInterf
     }
 
     /**
+     * Returns true, if an attribute exists
+     *
+     * @param string $name
+     * @return bool
+     */
+    public function hasAttribute(string $name): bool {
+        return isset($this->attributes[$name]);
+    }
+
+    /**
      * Adds an attribute to the list
      * Existing attributes are replaced.
      *
