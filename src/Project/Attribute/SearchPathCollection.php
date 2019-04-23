@@ -54,4 +54,9 @@ class SearchPathCollection extends Attribute
     public function getSearchPaths(string $type) {
         return $this->searchPaths[$type] ?? NULL;
     }
+
+    public function getValue()
+    {
+        return $this->searchPaths;
+    }
 }
