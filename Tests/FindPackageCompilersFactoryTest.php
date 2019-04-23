@@ -53,10 +53,14 @@ class FindPackageCompilersFactoryTest extends TestCase
         $project = $xml->getProject();
 
         $ctx = new CompilerContext($project);
-        $ctx->addCompiler(new FindPackageCompilersFactory());
+        $ctx->addCompiler(new FindPackageCompilersFactory([
+            __DIR__
+        ]));
 
         $ctx->setLogger(new PassToDefaultLogger());
 
         $ctx->compile();
+
+        $this->assertEquals("Hello!", $this->getActualOutput());
     }
 }
