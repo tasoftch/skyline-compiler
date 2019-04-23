@@ -90,7 +90,11 @@ abstract class AbstractExtendedCompilerFactory extends AbstractBasicCompilerFact
             }
         } else {
             // $className is compiler id and $description is class name
-            return new $description($className);
+            $instance =  new $description($className);
+            $description = [
+                self::COMPILER_ID_KEY => $className
+            ];
+            return $instance;
         }
     }
 

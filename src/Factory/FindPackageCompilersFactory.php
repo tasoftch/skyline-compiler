@@ -58,7 +58,18 @@ class FindPackageCompilersFactory extends AbstractExtendedCompilerFactory
     public function registerCompilerInstances(DependencyCollection $dependencyCollection, CompilerContext $context)
     {
         foreach($context->getSourceCodeManager()->yieldSourceFiles($this->getCompilerFilePattern(), $this->getSearchPaths()) as $file) {
-            print_r($file);
+            $descriptions = require $file;
+            if(is_iterable($descriptions)) {
+                foreach($descriptions as $className => $description) {
+                    $compiler = $this->instantiateCompiler($className, $description);
+
+                    $id = $description[ self::COMPILER_ID_KEY ];
+                    $deps = $description[ self::COMPILER_DEPENDENCIES_KEY ] ?? [];
+
+                    $dependencyCollection->add($id, $compiler, $deps);
+                }
+            } else
+                trigger_error("Return value of package compiler factory file $file must be an iterable", E_USER_NOTICE);
         }
     }
 

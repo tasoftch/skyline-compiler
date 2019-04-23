@@ -33,58 +33,30 @@
  */
 
 /**
- * BasicFactoryTest.php
+ * FindPackageCompilersFactoryTest.php
  * skyline-compiler
  *
- * Created on 2019-04-21 23:45 by thomas
+ * Created on 2019-04-23 17:40 by thomas
  */
 
-use PHPUnit\Framework\TestCase;
-use Skyline\Compiler\Context\Logger\SilentLogger;
-use Skyline\Compiler\Factory\ConfigMainCompilerFactory;
-use Skyline\Compiler\Factory\CreateHTAccessCompilerFactory;
-use Skyline\Compiler\Factory\SkylineEntryPointCompilerFactory;
-use Skyline\Compiler\Project\ProjectInterface;
-use Symfony\Component\Filesystem\Filesystem;
 use Skyline\Compiler\CompilerContext;
-use Skyline\Compiler\Factory\BasicCompilersFactory;
+use PHPUnit\Framework\TestCase;
+use Skyline\Compiler\Context\Logger\PassToDefaultLogger;
+use Skyline\Compiler\Factory\FindPackageCompilersFactory;
 use Skyline\Compiler\Project\Loader\XML;
 
-class BasicFactoryTest extends TestCase
+class FindPackageCompilersFactoryTest extends TestCase
 {
-    /** @var ProjectInterface */
-    public static $project;
-
-    public static function setUpBeforeClass()
+    public function testRegisterCompilerInstances()
     {
-        parent::setUpBeforeClass();
-
         $xml = new XML(__DIR__ . "/Projects/project.xml");
-        /** @var MyProject $proj */
-        self::$project = $xml->getProject();
+        $project = $xml->getProject();
 
-        $fs = new Filesystem();
-        $fs->remove(self::$project->getProjectRootDirectory() . "/SkylineAppData");
-    }
+        $ctx = new CompilerContext($project);
+        $ctx->addCompiler(new FindPackageCompilersFactory());
 
-    public function testFactory() {
-        $ctx = new CompilerContext(self::$project);
-        $ctx->setLogger($logger = new SilentLogger());
-
-        $ctx->addCompiler(new SkylineEntryPointCompilerFactory());
-        $ctx->addCompiler(new BasicCompilersFactory());
-        $ctx->addCompiler(new ConfigMainCompilerFactory());
-        $ctx->addCompiler(new CreateHTAccessCompilerFactory());
+        $ctx->setLogger(new PassToDefaultLogger());
 
         $ctx->compile();
-
-        $dappData = self::$project->getProjectRootDirectory() . "/SkylineAppData/";
-
-        $this->assertDirectoryExists($dappData);
-        $this->assertDirectoryExists("$dappData/Classes");
-        $this->assertDirectoryExists("$dappData/Compiled");
-        $this->assertDirectoryExists("$dappData/Config");
-
-        $this->assertFileExists("$dappData/Compiled/composer-packages.php");
     }
 }
