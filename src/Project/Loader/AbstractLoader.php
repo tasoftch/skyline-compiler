@@ -158,9 +158,13 @@ abstract class AbstractLoader extends AbstractContainer implements ConfigurableS
                 }
             }
             $project->setAttribute($fl);
+
+            $this->completeProject($project);
         } else {
             throw new BadConfigurationException("Instantiated project is not mutable");
         }
+
+        $this->loadDidComplete();
 
         return $project;
     }
