@@ -45,8 +45,6 @@ use Skyline\Kernel\Bootstrap;
 
 class SkylineEntryPointFileCompiler extends AbstractCompiler
 {
-    const CACHE_BOOTSTRAP_CLASSNAME = 'bootstrap-class-name';
-
     public function compile(CompilerContext $context)
     {
         $ROOT = $this->defineRoot($context->getProject());
@@ -79,9 +77,11 @@ class SkylineEntryPointFileCompiler extends AbstractCompiler
 
         $skylineAppDir = SkyRelativePath($context->getProject()->getProjectRootDirectory()."/_", $context->getSkylineAppDataDirectory());
 
-        $BOOTSTRAP_CLASS = Bootstrap::class;
-        if($val = $context->getValueCache()->fetchValue(self::CACHE_BOOTSTRAP_CLASSNAME))
-            $BOOTSTRAP_CLASS = $val;
+        $ctxParams = $context->getContextParameters();
+
+        $BOOTSTRAP_CLASS = $ctxParams->getBootstrapClass();
+        $APP_CLASS = $ctxParams->getApplicationClass();
+
 
         $hosts = $context->getProject()->getAttribute(AttributeInterface::HOSTS_ATTR_NAME);
         $CORS = "";
@@ -151,7 +151,7 @@ $ROOT
 require 'vendor/autoload.php';
 
 use Symfony\Component\HttpFoundation\Request;
-use Skyline\Kernel\Application;
+use $APP_CLASS as Application;
 use $BOOTSTRAP_CLASS as Bootstrap;
 use Skyline\Kernel\Service\CORSService as CORS;
 
