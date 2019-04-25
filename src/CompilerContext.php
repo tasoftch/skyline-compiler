@@ -356,4 +356,13 @@ class CompilerContext
     {
         $this->contextParameters = $contextParameters;
     }
+
+    /**
+     * If returned true, all compilers should store absolute linked file references
+     *
+     * @return bool
+     */
+    public function useZeroLinks(): bool {
+        return CC::get($this->getConfiguration(), CC::COMPILER_ZERO_LINKS);
+    }
 }

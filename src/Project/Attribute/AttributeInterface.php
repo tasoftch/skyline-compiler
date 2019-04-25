@@ -44,7 +44,11 @@ interface AttributeInterface
     const WHITELIST_ATTR_NAME = 'whitelist';
     const FILTER_ATTR_NAME = 'filters';
     // From public directory into application directory, relative path
-    const APP_ROOT_NAME = 'appRoot';
+    const APP_ROOT_ATTR_NAME = 'appRoot';
+
+    const PUBLIC_DIR_ATTR_NAME = 'public';
+    const EXCLUDED_ATTR_NAME = 'excluded';
+    const HTTPS_ATTR_NAME = 'HTTPS';
 
     /**
      * @return string
