@@ -40,6 +40,7 @@ use Skyline\Compiler\Exception\BadConfigurationException;
 use Skyline\Compiler\Project\Attribute\Attribute;
 use Skyline\Compiler\Project\Attribute\AttributeCollection;
 use Skyline\Compiler\Project\Attribute\AttributeInterface;
+use Skyline\Compiler\Project\Attribute\CompilerContextParameterCollection;
 use Skyline\Compiler\Project\Attribute\FilterAttribute;
 use Skyline\Compiler\Project\Attribute\SearchPathAttribute;
 use Skyline\Compiler\Project\Attribute\SearchPathCollection;
@@ -159,6 +160,10 @@ abstract class AbstractLoader extends AbstractContainer implements ConfigurableS
             }
             $project->setAttribute($fl);
 
+            $ctxParams = new CompilerContextParameterCollection('context');
+            $this->loadCompilerContextParameters($ctxParams);
+            $project->setAttribute($ctxParams);
+
             $this->completeProject($project);
         } else {
             throw new BadConfigurationException("Instantiated project is not mutable");
@@ -221,6 +226,13 @@ abstract class AbstractLoader extends AbstractContainer implements ConfigurableS
      * @return Generator
      */
     abstract protected function yieldFilters(): Generator;
+
+    /**
+     * Called to load parameters for context collection
+     * @param CompilerContextParameterCollection $parameterCollection
+     */
+    protected function loadCompilerContextParameters(CompilerContextParameterCollection $parameterCollection) {
+    }
 
     /**
      * Finally passes the project to this method to adjust final settings
