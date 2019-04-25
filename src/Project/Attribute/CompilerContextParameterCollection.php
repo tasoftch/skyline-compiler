@@ -44,7 +44,7 @@ class CompilerContextParameterCollection extends AttributeCollection
     /**
      * Denies further modifications
      */
-    public function denyModifications() {
+    final public function denyModifications() {
         $this->denyModifications = true;
     }
 
@@ -60,18 +60,29 @@ class CompilerContextParameterCollection extends AttributeCollection
     }
 
     /**
+     * Internal method to check if the class allows modifications
+     * @internal
+     */
+    private function _checkModify() {
+        if($this->canModify() == false)
+            throw new CompilerException("Can not modify context parameters anymore");
+    }
+
+    /**
      * Puts value into attribute
      * @param $attrName
      * @param null $value
      * @internal
      */
     private function _put($attrName, $value = NULL) {
-        if($this->denyModifications)
-            throw new CompilerException("Can not modify context parameters anymore");
+        $this->_checkModify();
 
         if($value === NULL)
             $this->removeAttribute($attrName);
-        else {
+        elseif($this->hasAttribute($attrName) && method_exists($attr = $this->getAttribute($attrName), "setValue")) {
+            /** @var Attribute $attr */
+            $attr->setValue($value);
+        } else {
             $this->addAttribute(new Attribute($attrName, $value));
         }
     }
@@ -96,8 +107,44 @@ class CompilerContextParameterCollection extends AttributeCollection
      * Returns true if the context parameters can be modified.
      * @return bool
      */
-    public function canModify(): bool
+    final public function canModify(): bool
     {
         return !$this->denyModifications;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setAttributes(array $attributes)
+    {
+        $this->_checkModify();
+        parent::setAttributes($attributes);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setValue($value)
+    {
+        $this->_checkModify();
+        parent::setValue($value);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function removeAttribute(string $attributeName)
+    {
+        $this->_checkModify();
+        parent::removeAttribute($attributeName);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function addAttribute(AttributeInterface $attribute)
+    {
+        $this->_checkModify();
+        parent::addAttribute($attribute);
     }
 }
