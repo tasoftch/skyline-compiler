@@ -177,7 +177,7 @@ class CompilerContextParameterCollection extends AttributeCollection
      * @return array
      */
     public function getCompilerFactories(): array {
-        return $this->_fetch("applicationClass", []);
+        return $this->_fetch("factories", []);
     }
 
     /**
