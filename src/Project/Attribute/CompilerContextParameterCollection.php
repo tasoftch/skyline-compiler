@@ -88,22 +88,6 @@ class CompilerContextParameterCollection extends AttributeCollection
     }
 
     /**
-     * @return string
-     */
-    public function getContextClass(): string
-    {
-        return $this->_fetch("contextClass", CompilerContext::class);
-    }
-
-    /**
-     * @param string $contextClass
-     */
-    public function setContextClass(string $contextClass): void
-    {
-        $this->_put("contextClass", $contextClass);
-    }
-
-    /**
      * Returns true if the context parameters can be modified.
      * @return bool
      */
@@ -146,5 +130,52 @@ class CompilerContextParameterCollection extends AttributeCollection
     {
         $this->_checkModify();
         parent::addAttribute($attribute);
+    }
+
+    /**
+     * @return string
+     */
+    public function getContextClass(): string
+    {
+        return $this->_fetch("contextClass", CompilerContext::class);
+    }
+
+    /**
+     * @param string $contextClass
+     */
+    public function setContextClass(string $contextClass): void
+    {
+        $this->_put("contextClass", $contextClass);
+    }
+
+    /**
+     * Sets the class of the main application
+     * @param string $class
+     */
+    public function setApplicationClass(string $class): void {
+        $this->_put("applicationClass", $class);
+    }
+
+    /**
+     * @return string
+     */
+    public function getApplicationClass(): string {
+        return $this->_fetch("applicationClass", "Skyline\Kernel\Application");
+    }
+
+    /**
+     * Declare all compiler factoriy class names that should be performed.
+     *
+     * @param array $factories
+     */
+    public function setCompilerFactories(array $factories): void {
+        $this->_put("factories", $factories);
+    }
+
+    /**
+     * @return array
+     */
+    public function getCompilerFactories(): array {
+        return $this->_fetch("applicationClass", []);
     }
 }
