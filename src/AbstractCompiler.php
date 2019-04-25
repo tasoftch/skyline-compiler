@@ -55,7 +55,7 @@ abstract class AbstractCompiler implements CompilerInterface
      */
     public function getCompilerName(): string
     {
-        return ucwords($this->getCompilerID());
+        return ucwords(str_replace("-", " ", $this->getCompilerID()));
     }
 
     /**
