@@ -35,7 +35,69 @@
 namespace Skyline\Compiler\Project\Attribute;
 
 
+use Skyline\Compiler\CompilerContext;
+use Skyline\Compiler\Exception\CompilerException;
+
 class CompilerContextParameterCollection extends AttributeCollection
 {
+    private $denyModifications = false;
+    /**
+     * Denies further modifications
+     */
+    public function denyModifications() {
+        $this->denyModifications = true;
+    }
 
+    /**
+     * Fetches value from attributes
+     * @param $attrName
+     * @param null $default
+     * @return mixed|null
+     * @internal
+     */
+    private function _fetch($attrName, $default = NULL) {
+        return $this->hasAttribute($attrName) ? $this->getAttribute($attrName)->getValue() : $default;
+    }
+
+    /**
+     * Puts value into attribute
+     * @param $attrName
+     * @param null $value
+     * @internal
+     */
+    private function _put($attrName, $value = NULL) {
+        if($this->denyModifications)
+            throw new CompilerException("Can not modify context parameters anymore");
+
+        if($value === NULL)
+            $this->removeAttribute($attrName);
+        else {
+            $this->addAttribute(new Attribute($attrName, $value));
+        }
+    }
+
+    /**
+     * @return string
+     */
+    public function getContextClass(): string
+    {
+        return $this->_fetch("contextClass", CompilerContext::class);
+    }
+
+    /**
+     * @param string $contextClass
+     */
+    public function setContextClass(string $contextClass): void
+    {
+        $this->_put("contextClass", $contextClass);
+    }
+
+    /**
+     * Returns true if the context parameters can be modified.
+     * @return bool
+     */
+    public function canModify(): bool
+    {
+        return !$this->denyModifications;
+    }
 }
