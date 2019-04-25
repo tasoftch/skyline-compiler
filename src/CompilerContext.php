@@ -344,6 +344,8 @@ class CompilerContext
      */
     public function getContextParameters(): CompilerContextParameterCollection
     {
+        if(!$this->contextParameters)
+            $this->contextParameters = new CompilerContextParameterCollection("context");
         return $this->contextParameters;
     }
 

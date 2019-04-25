@@ -172,15 +172,12 @@ EOT;
 
     protected function defineRoot(ProjectInterface $proj)
     {
-        $ROOT = "";
-
         if ($attr = $proj->getAttribute(AttributeInterface::APP_ROOT_NAME)) {
             $root = $attr->getValue();
-            if($root == '#auto#') {
-                $root = SkyRelativePath($proj->getProjectPublicDirectory()."/_", $proj->getProjectRootDirectory());
-            }
-            $ROOT = "chdir(__DIR__ . \"/$root\");\n";
-        }
+        } else
+            $root = SkyRelativePath($proj->getProjectPublicDirectory()."/_", $proj->getProjectRootDirectory());
+
+        $ROOT = "chdir(__DIR__ . \"/$root\");\n";
 
         return $ROOT;
     }
