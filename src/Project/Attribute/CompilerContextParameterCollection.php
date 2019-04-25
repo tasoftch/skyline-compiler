@@ -37,6 +37,7 @@ namespace Skyline\Compiler\Project\Attribute;
 
 use Skyline\Compiler\CompilerContext;
 use Skyline\Compiler\Exception\CompilerException;
+use Skyline\Kernel\Bootstrap;
 
 class CompilerContextParameterCollection extends AttributeCollection
 {
@@ -177,5 +178,21 @@ class CompilerContextParameterCollection extends AttributeCollection
      */
     public function getCompilerFactories(): array {
         return $this->_fetch("applicationClass", []);
+    }
+
+    /**
+     * Declare the class to bootstrap your Skyline CMS Application
+     *
+     * @param string $class
+     */
+    public function setBootstrapClass(string $class): void {
+        $this->_put("bootstrapClass", $class);
+    }
+
+    /**
+     * @return string
+     */
+    public function getBootstrapClass(): string {
+        return $this->_fetch("bootstrapClass", Bootstrap::class);
     }
 }
