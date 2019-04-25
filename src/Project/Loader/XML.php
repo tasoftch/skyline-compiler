@@ -36,9 +36,11 @@ namespace Skyline\Compiler\Project\Loader;
 
 
 use Generator;
+use Skyline\Compiler\CompilerContext;
 use Skyline\Compiler\Exception\ProjectLoaderException;
 use SimpleXMLElement;
 use Skyline\Compiler\Project\Attribute\Attribute;
+use Skyline\Compiler\Project\Attribute\CompilerContextParameterCollection;
 use Skyline\Compiler\Project\Attribute\FilterAttribute;
 use Skyline\Compiler\Project\Attribute\FilterConditionAttribute;
 
@@ -206,6 +208,30 @@ class XML extends AbstractFileLoader
                 $FILTER->setConditions($conds);
                 yield $FILTER;
             }
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function loadCompilerContextParameters(CompilerContextParameterCollection $parameterCollection)
+    {
+        if($ctx = $this->XML->context) {
+            $parameterCollection->setContextClass((string) ($ctx["class"] ?? CompilerContext::class));
+            $parameterCollection->setBootstrapClass( (string) ($ctx->bootstrap ?? NULL) );
+            $parameterCollection->setApplicationClass( (string) ($ctx->application ?? NULL) );
+
+            if($ctx->factory) {
+                $factories = [];
+                foreach($ctx->factory as $f) {
+                    $factories[] = (string) $f;
+                }
+
+                $parameterCollection->setCompilerFactories($factories);
+            }
+
+            if(isset($ctx->denyModifications))
+                $parameterCollection->denyModifications();
         }
     }
 
