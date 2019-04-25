@@ -74,6 +74,9 @@ class CompilerContext
     /** @var array  */
     private $compilers = [];
 
+    /** @var CompilerInterface[] */
+    private $orderedCompilers;
+
     /**
      * CompilerContext constructor.
      * @param ProjectInterface $project
@@ -89,9 +92,10 @@ class CompilerContext
      * @param CompilerInterface|CompilerFactoryInterface $compiler
      */
     public function addCompiler($compiler) {
-        if($compiler instanceof CompilerFactoryInterface || $compiler instanceof CompilerInterface)
+        if($compiler instanceof CompilerFactoryInterface || $compiler instanceof CompilerInterface) {
             $this->compilers[] = $compiler;
-        else
+            $this->orderedCompilers = NULL;
+        } else
             throw new CompilerException("Can only add objects that implement CompilerInterface or CompilerFactoryInterface to context");
     }
 
@@ -101,8 +105,10 @@ class CompilerContext
      * @param $compiler
      */
     public function removeCompiler($compiler) {
-        if(($idx = array_search($compiler, $this->compilers)) !== false)
+        if(($idx = array_search($compiler, $this->compilers)) !== false) {
             unset($this->compilers[$idx]);
+            $this->orderedCompilers = NULL;
+        }
     }
 
     /**
@@ -240,30 +246,32 @@ class CompilerContext
     }
 
     /**
-     * Resolves the compilers against their dependencies and creates an iterator
+     * Resolves the compilers against their dependencies
      *
      * @return array
-     * @internal
      */
-    private function getOrganizedCompilersIterator() {
-        $depCollection = new DependencyCollection(false);
-        $depCollection->setAcceptsDuplicates(false);
+    public function getOrganizedCompilers() {
+        if(NULL === $this->orderedCompilers) {
+            $depCollection = new DependencyCollection(false);
+            $depCollection->setAcceptsDuplicates(false);
 
-        foreach($this->compilers as $compiler) {
-            if($compiler instanceof CompilerInterface) {
-                $id = $compiler->getCompilerID();
-                $deps = $compiler->getDependsOnCompilerIDs();
-                if($deps)
-                    $depCollection->add($id, $compiler, $deps);
-                else
-                    $depCollection->add($id, $compiler);
+            foreach($this->compilers as $compiler) {
+                if($compiler instanceof CompilerInterface) {
+                    $id = $compiler->getCompilerID();
+                    $deps = $compiler->getDependsOnCompilerIDs();
+                    if($deps)
+                        $depCollection->add($id, $compiler, $deps);
+                    else
+                        $depCollection->add($id, $compiler);
+                }
+                elseif($compiler instanceof CompilerFactoryInterface) {
+                    $compiler->registerCompilerInstances($depCollection, $this);
+                }
             }
-            elseif($compiler instanceof CompilerFactoryInterface) {
-                $compiler->registerCompilerInstances($depCollection, $this);
-            }
+
+            $this->orderedCompilers = $depCollection->getOrderedElements();
         }
-
-        return $depCollection->getOrderedElements();
+        return $this->orderedCompilers;
     }
 
     /**
@@ -296,7 +304,7 @@ class CompilerContext
 
 
             /** @var CompilerInterface $compiler */
-            foreach($this->getOrganizedCompilersIterator() as $compiler) {
+            foreach($this->getOrganizedCompilers() as $compiler) {
                 $compiler->compile($this);
             }
         } catch (Throwable $throwable) {
