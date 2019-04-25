@@ -285,8 +285,10 @@ class CompilerContext
      *
      * The compilation does not throw any error or notification. Everything is redirected to the logger.
      * To handle errors, use a different logger.
+     *
+     * @param callable $validator
      */
-    public function compile() {
+    public function compile(callable $validator = NULL) {
         if(!($project = $this->getProject())) {
             $project = CC::get($this->getConfiguration(), CC::COMPILER_PROJECT);
             if(!$project)
@@ -309,7 +311,8 @@ class CompilerContext
 
             /** @var CompilerInterface $compiler */
             foreach($this->getOrganizedCompilers() as $compiler) {
-                $compiler->compile($this);
+                if(!$validator || $validator($compiler))
+                    $compiler->compile($this);
             }
         } catch (Throwable $throwable) {
             $this->getLogger()->logException($throwable);
