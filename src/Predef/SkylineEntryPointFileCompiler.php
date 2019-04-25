@@ -79,8 +79,8 @@ class SkylineEntryPointFileCompiler extends AbstractCompiler
 
         $ctxParams = $context->getContextParameters();
 
-        $BOOTSTRAP_CLASS = $ctxParams->getBootstrapClass();
-        $APP_CLASS = $ctxParams->getApplicationClass();
+        $BOOTSTRAP_CLASS = $ctxParams->getBootstrapClass() ?: Bootstrap::class;
+        $APP_CLASS = $ctxParams->getApplicationClass() ?: "Skyline\Kernel\Application";
 
 
         $hosts = $context->getProject()->getAttribute(AttributeInterface::HOSTS_ATTR_NAME);
