@@ -44,6 +44,7 @@ use Skyline\Compiler\Context\ValueCache\ValueCache;
 use Skyline\Compiler\Context\ValueCache\ValueCacheInterface;
 use Skyline\Compiler\Exception\CompilerException;
 use Skyline\Compiler\Project\Attribute\AttributeInterface;
+use Skyline\Compiler\Project\Attribute\CompilerContextParameterCollection;
 use Skyline\Compiler\Project\Attribute\SearchPathCollection;
 use Skyline\Compiler\Project\ProjectInterface;
 use Skyline\Kernel\Service\Error\AbstractErrorHandlerService;
@@ -76,6 +77,9 @@ class CompilerContext
 
     /** @var CompilerInterface[] */
     private $orderedCompilers;
+
+    /** @var CompilerContextParameterCollection */
+    private $contextParameters;
 
     /**
      * CompilerContext constructor.
@@ -330,5 +334,21 @@ class CompilerContext
     public function setSourceCodeManager(SourceCodeManager $sourceCodeManager): void
     {
         $this->sourceCodeManager = $sourceCodeManager;
+    }
+
+    /**
+     * @return CompilerContextParameterCollection
+     */
+    public function getContextParameters(): CompilerContextParameterCollection
+    {
+        return $this->contextParameters;
+    }
+
+    /**
+     * @param CompilerContextParameterCollection $contextParameters
+     */
+    public function setContextParameters(CompilerContextParameterCollection $contextParameters): void
+    {
+        $this->contextParameters = $contextParameters;
     }
 }
