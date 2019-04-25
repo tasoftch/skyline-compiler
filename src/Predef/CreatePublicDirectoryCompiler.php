@@ -50,7 +50,7 @@ class CreatePublicDirectoryCompiler extends CreateDirectoriesCompiler
 
     public function getDirectoryNames(): array
     {
-        $rel = SkyRelativePath($this->context->getProject()->getProjectRootDirectory() . "/_", $this->context->getProject()->getProjectPublicDirectory());
+        $rel = $this->context->getProject()->getProjectPublicDirectory();
 
         return [
             "../$rel"

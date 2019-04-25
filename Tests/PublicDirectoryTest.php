@@ -40,8 +40,11 @@
  */
 
 use PHPUnit\Framework\TestCase;
+use Skyline\Compiler\CompilerContext;
+use Skyline\Compiler\Predef\CreatePublicDirectoryCompiler;
 use Skyline\Compiler\Project\Attribute\Attribute;
 use Skyline\Compiler\Project\Project;
+use Symfony\Component\Filesystem\Filesystem;
 
 class PublicDirectoryTest extends TestCase
 {
@@ -50,6 +53,12 @@ class PublicDirectoryTest extends TestCase
         $proj->setAttribute(new Attribute("public", "Public"));
         $proj->setAttribute(new Attribute(Attribute::APP_ROOT_ATTR_NAME, ""));
 
-        echo $proj->getProjectPublicDirectory();
+        $ctx = new CompilerContext($proj);
+        $ctx->addCompiler(new CreatePublicDirectoryCompiler('dp'));
+
+        $ctx->compile();
+        $this->assertDirectoryExists("Public");
+        $fs = new Filesystem();
+        $fs->remove("Public");
     }
 }

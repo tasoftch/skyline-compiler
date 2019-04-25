@@ -94,10 +94,12 @@ class CreateDirectoriesCompiler extends AbstractCompiler
      * @param LoggerInterface $logger
      */
     protected function makeDir($dirName, LoggerInterface $logger) {
+        $dn = explode(getcwd(), $dirName)[1] ?? $dirName;
+
         if(@mkdir($dirName)) {
-            $logger->logText("Created directory %s", LoggerInterface::VERBOSITY_NORMAL, NULL, $dirName);
+            $logger->logText("Created directory <fg=green>%s</>", LoggerInterface::VERBOSITY_NORMAL, NULL, $dn);
         } else {
-            $logger->logWarning("Creating directory $dirName failed");
+            $logger->logWarning("Creating directory $dn failed");
         }
     }
 
@@ -107,14 +109,16 @@ class CreateDirectoriesCompiler extends AbstractCompiler
      * @return bool
      */
     protected function removeDir($dir, LoggerInterface $logger): bool {
+        $dn = explode(getcwd(), $dir)[1] ?? $dir;
+
         try {
             if(!$this->fileSystem)
                 $this->fileSystem = new Filesystem();
             $this->fileSystem->remove($dir);
-            $logger->logText("Directory $dir removed", LoggerInterface::VERBOSITY_VERY_VERBOSE);
+            $logger->logText("Directory <fg=red>$dn</> removed", LoggerInterface::VERBOSITY_VERY_VERBOSE);
             return true;
         } catch (IOException $exception) {
-            $logger->logWarning("Removing directory $dir failed");
+            $logger->logWarning("Removing directory $dn failed");
             return false;
         }
     }
