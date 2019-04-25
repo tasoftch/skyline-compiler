@@ -81,7 +81,11 @@ class Project implements ProjectInterface, MutableProjectInterface
      */
     public function getProjectPublicDirectory(): string
     {
-        return $this->publicDirectory ?? $this->rootDirectory . "/Public";
+        if($this->publicDirectory)
+            return $this->publicDirectory;
+        if($this->hasAttribute("public"))
+            return $this->getAttribute("public")->getValue();
+        return "./Public";
     }
 
     /**
