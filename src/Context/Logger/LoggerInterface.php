@@ -39,9 +39,11 @@ use Throwable;
 
 interface LoggerInterface
 {
-    const VERBOSITY_DEBUG = 0;
-    const VERBOSITY_VERY = 1;
-    const VERBOSITY_NORMAL = 2;
+    const VERBOSITY_QUIET = 16;
+    const VERBOSITY_NORMAL = 32;
+    const VERBOSITY_VERBOSE = 64;
+    const VERBOSITY_VERY_VERBOSE = 128;
+    const VERBOSITY_DEBUG = 256;
 
 
 
