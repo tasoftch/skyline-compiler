@@ -41,13 +41,12 @@ use Skyline\Compiler\CompilerConfiguration as CC;
 use Skyline\Compiler\CompilerConfiguration;
 use Skyline\Compiler\CompilerContext;
 use Skyline\Compiler\Context\Logger\LoggerInterface;
-use Skyline\Compiler\Exception\FileOrDirectoryNotFoundException;
-use Skyline\Compiler\Project\Attribute\AttributeInterface;
 use Skyline\Compiler\Project\Attribute\SearchPathAttribute;
 use TASoft\Config\Compiler\BadSourceException;
 use TASoft\Config\Compiler\Source\FileSource;
 use TASoft\Config\Compiler\Source\SourceContainer;
 use TASoft\Config\Compiler\StandardCompiler;
+use Traversable;
 
 class ConfigurationCompiler extends AbstractCompiler
 {
@@ -66,7 +65,7 @@ class ConfigurationCompiler extends AbstractCompiler
 
         $addFile = function($file) use ($sourceContainer, $context) {
             if(is_file($file)) {
-                $context->getLogger()->logText("Source for %s found: %s", LoggerInterface::VERBOSITY_VERY, NULL, $this->getCompilerID(), $file);
+                $context->getLogger()->logText("Source for %s found: %s", LoggerInterface::VERBOSITY_VERY_VERBOSE, NULL, $this->getCompilerID(), $file);
 
                 try {
                     $sourceContainer->addSource(new FileSource($file));
@@ -86,7 +85,7 @@ class ConfigurationCompiler extends AbstractCompiler
         if($defaultFile = $this->info[ static::INFO_CUSTOM_FILENAME_KEY ] ?? NULL) {
             foreach($context->getProjectSearchPaths(SearchPathAttribute::SEARCH_PATH_USER_CONFIG) as $configPath) {
                 if(is_file($f = "$configPath/$defaultFile")) {
-                    $context->getLogger()->logText("DEFAULT for %s: %s", LoggerInterface::VERBOSITY_VERY, NULL, $this->getCompilerID(), $f);
+                    $context->getLogger()->logText("DEFAULT for %s: %s", LoggerInterface::VERBOSITY_VERY_VERBOSE, NULL, $this->getCompilerID(), $f);
                     $addFile($f);
                     break;
                 }
@@ -96,7 +95,7 @@ class ConfigurationCompiler extends AbstractCompiler
         if(CC::get($context->getConfiguration(), CC::COMPILER_DEBUG) && ($defaultFile = $this->info[ static::INFO_DEV_FILENAME_KEY ] ?? NULL)) {
             foreach($context->getProjectSearchPaths(SearchPathAttribute::SEARCH_PATH_USER_CONFIG) as $configPath) {
                 if(is_file($f = "$configPath/$defaultFile")) {
-                    $context->getLogger()->logText("DEV for %s: %s", LoggerInterface::VERBOSITY_VERY, NULL, $this->getCompilerID(), $f);
+                    $context->getLogger()->logText("DEV for %s: %s", LoggerInterface::VERBOSITY_VERY_VERBOSE, NULL, $this->getCompilerID(), $f);
                     $addFile($f);
                     break;
                 }
@@ -106,7 +105,7 @@ class ConfigurationCompiler extends AbstractCompiler
         if(CC::get($context->getConfiguration(), CC::COMPILER_TEST) && ($defaultFile = $this->info[ static::INFO_TEST_FILENAME_KEY ] ?? NULL)) {
             foreach($context->getProjectSearchPaths(SearchPathAttribute::SEARCH_PATH_USER_CONFIG) as $configPath) {
                 if(is_file($f = "$configPath/$defaultFile")) {
-                    $context->getLogger()->logText("TEST for %s: %s", LoggerInterface::VERBOSITY_VERY, NULL, $this->getCompilerID(), $f);
+                    $context->getLogger()->logText("TEST for %s: %s", LoggerInterface::VERBOSITY_VERY_VERBOSE, NULL, $this->getCompilerID(), $f);
                     $addFile($f);
                     break;
                 }
@@ -122,11 +121,11 @@ class ConfigurationCompiler extends AbstractCompiler
     /**
      * Compile the configuration now
      *
-     * @param \Traversable $source
+     * @param Traversable $source
      * @param string $target
      * @param CompilerContext $context
      */
-    protected function compileConfiguration(\Traversable $source, string $target, CompilerContext $context) {
+    protected function compileConfiguration(Traversable $source, string $target, CompilerContext $context) {
         $compiler = new StandardCompiler();
         $compiler->setSource($source);
 

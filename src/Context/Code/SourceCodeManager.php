@@ -41,6 +41,7 @@ use RecursiveDirectoryIterator;
 use Skyline\Compiler\CompilerConfiguration as CC;
 use Skyline\Compiler\CompilerContext;
 use Skyline\Compiler\Project\Attribute\SearchPathAttribute;
+use SplFileInfo;
 
 class SourceCodeManager
 {
@@ -84,7 +85,7 @@ class SourceCodeManager
                 $this->sourceFiles[$name] = [];
 
                 $iterateOverDirectory = function(RecursiveDirectoryIterator $iterator) use (&$iterateOverDirectory) {
-                    /** @var \SplFileInfo $item */
+                    /** @var SplFileInfo $item */
                     foreach($iterator as $item) {
                         $file = new SourceFile($item);
                         if($this->shouldIncludeFilename($file)) {

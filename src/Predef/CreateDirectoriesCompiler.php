@@ -111,7 +111,7 @@ class CreateDirectoriesCompiler extends AbstractCompiler
             if(!$this->fileSystem)
                 $this->fileSystem = new Filesystem();
             $this->fileSystem->remove($dir);
-            $logger->logText("Directory $dir removed", LoggerInterface::VERBOSITY_VERY);
+            $logger->logText("Directory $dir removed", LoggerInterface::VERBOSITY_VERY_VERBOSE);
             return true;
         } catch (IOException $exception) {
             $logger->logWarning("Removing directory $dir failed");

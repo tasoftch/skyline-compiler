@@ -49,7 +49,7 @@ class CreateDirectoriesIfNotExistCompiler extends CreateDirectoriesCompiler
      */
     protected function removeDir($dir, LoggerInterface $logger): bool
     {
-        $logger->logText("Directory $dir already exists", LoggerInterface::VERBOSITY_VERY);
+        $logger->logText("Directory $dir already exists", LoggerInterface::VERBOSITY_VERY_VERBOSE);
         return true;
     }
 }
