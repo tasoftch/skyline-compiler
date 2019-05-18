@@ -42,12 +42,13 @@ use Skyline\Compiler\Project\Attribute\AttributeInterface;
 use Skyline\Compiler\Project\Attribute\FilterConditionAttribute;
 use Skyline\Compiler\Project\ProjectInterface;
 use Skyline\Kernel\Bootstrap;
+use TASoft\Util\PathTool;
 
 class SkylineEntryPointFileCompiler extends AbstractCompiler
 {
     public function compile(CompilerContext $context)
     {
-        $ROOT = $this->defineRoot($context->getProject());
+        $ROOT = $this->defineRoot($context->getProject(), $context);
         $FILTERS = $this->defineFilters($context->getProject());
 
         $params = [];
@@ -75,7 +76,7 @@ class SkylineEntryPointFileCompiler extends AbstractCompiler
 
         $real =  implode("\n", $params);
 
-        $skylineAppDir = SkyRelativePath($context->getProject()->getProjectRootDirectory()."/_", $context->getSkylineAppDataDirectory());
+        $skylineAppDir = PathTool::relative ($context->getProject()->getProjectRootDirectory().DIRECTORY_SEPARATOR, $context->getSkylineAppDataDirectory());
 
         $ctxParams = $context->getContextParameters();
 
@@ -170,19 +171,23 @@ EOT;
         file_put_contents($fn, $content);
     }
 
-    protected function defineRoot(ProjectInterface $proj)
+    protected function defineRoot(ProjectInterface $proj, CompilerContext $context)
     {
         if ($attr = $proj->getAttribute(AttributeInterface::APP_ROOT_ATTR_NAME)) {
             $root = $attr->getValue();
+            if($context->useZeroLinks())
+                $root = realpath($root);
+
+            if($root == getcwd())
+                return "";
+
+            return "chdir('$root');";
         } else {
             $pr = $proj->getProjectRootDirectory() . DIRECTORY_SEPARATOR . $proj->getProjectPublicDirectory();
-            $root = SkyRelativePath("$pr/_", $proj->getProjectRootDirectory());
+            $root = PathTool::relative("$pr", $proj->getProjectRootDirectory());
+
+            return $root;
         }
-
-
-        $ROOT = "chdir(__DIR__ . \"/$root\");\n";
-
-        return $ROOT;
     }
 
     protected function defineFilters(ProjectInterface $project) {

@@ -21,6 +21,7 @@
     "ext-json": "*",
     "tasoft/service-manager": "dev-master",
     "tasoft/config": "dev-master",
+    "tasoft/tools-path": "dev-master",
     "skyline/kernel": "dev-master",
     "symfony/filesystem": "dev-master"
   },

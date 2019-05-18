@@ -41,6 +41,7 @@
 
 use PHPUnit\Framework\TestCase;
 use Skyline\Compiler\CompilerContext;
+use Skyline\Compiler\Factory\SkylineEntryPointCompilerFactory;
 use Skyline\Compiler\Predef\CreatePublicDirectoryCompiler;
 use Skyline\Compiler\Project\Attribute\Attribute;
 use Skyline\Compiler\Project\Project;
@@ -51,14 +52,14 @@ class PublicDirectoryTest extends TestCase
     public function testPublicDirectory() {
         $proj = new Project();
         $proj->setAttribute(new Attribute("public", "Public"));
-        $proj->setAttribute(new Attribute(Attribute::APP_ROOT_ATTR_NAME, ""));
 
         $ctx = new CompilerContext($proj);
         $ctx->addCompiler(new CreatePublicDirectoryCompiler('dp'));
+        $ctx->addCompiler(new SkylineEntryPointCompilerFactory());
 
         $ctx->compile();
         $this->assertDirectoryExists("Public");
         $fs = new Filesystem();
-        $fs->remove("Public");
+        //$fs->remove("Public");
     }
 }
