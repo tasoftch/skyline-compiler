@@ -112,6 +112,22 @@ class SkylineEntryPointFileCompiler extends AbstractCompiler
             }
         }
 
+        $INI = [];
+
+        $INI["display_errors"] = 0;
+        $INI["error_reporting"] = E_ALL & ~E_DEPRECATED & ~E_STRICT;
+        $INI["log_errors"] = 1;
+
+        if($context->isDevelopmentContext()) {
+            $INI["display_errors"] = 1;
+            $INI["error_reporting"] = E_ALL;
+            $INI["log_errors"] = 0;
+        }
+
+        $theINI = "";
+        foreach ($INI as $ik => $iv)
+            $theINI .= "ini_set('$ik', $iv);\n";
+
         $content = <<< EOT
 <?php
 /**
@@ -147,14 +163,15 @@ class SkylineEntryPointFileCompiler extends AbstractCompiler
  *
  */
 
-$FILTERS
-$ROOT
-require 'vendor/autoload.php';
-
-use Symfony\Component\HttpFoundation\Request;
 use $APP_CLASS as Application;
 use $BOOTSTRAP_CLASS as Bootstrap;
 use Skyline\Kernel\Service\CORSService as CORS;
+
+$theINI
+
+$FILTERS
+$ROOT
+require 'vendor/autoload.php';
 
 \$configuration = Bootstrap::getConfigurationPath('$skylineAppDir');
 
@@ -173,21 +190,16 @@ EOT;
 
     protected function defineRoot(ProjectInterface $proj, CompilerContext $context)
     {
-        if ($attr = $proj->getAttribute(AttributeInterface::APP_ROOT_ATTR_NAME)) {
-            $root = $attr->getValue();
+        if($proj->getProjectRootDirectory() != $proj->getProjectPublicDirectory()) {
             if($context->useZeroLinks())
-                $root = realpath($root);
+                return sprintf("chdir('%s');", $proj->getProjectRootDirectory());
 
-            if($root == getcwd())
-                return "";
-
+            $pr = $proj->getProjectRootDirectory() . DIRECTORY_SEPARATOR . $proj->getProjectPublicDirectory() . DIRECTORY_SEPARATOR;
+            $root = PathTool::relative( "$pr",$proj->getProjectRootDirectory().DIRECTORY_SEPARATOR);
             return "chdir('$root');";
-        } else {
-            $pr = $proj->getProjectRootDirectory() . DIRECTORY_SEPARATOR . $proj->getProjectPublicDirectory();
-            $root = PathTool::relative( $proj->getProjectRootDirectory(), "$pr");
-
-            return $root;
         }
+
+        return "";
     }
 
     protected function defineFilters(ProjectInterface $project) {

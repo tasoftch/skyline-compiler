@@ -32,59 +32,73 @@
  *
  */
 
-namespace Skyline\Compiler;
+namespace Skyline\Compiler\Context\Code;
 
 
-final class CompilerConfiguration
+class Pattern
 {
-    const COMPILER_CACHE_FILENAME = 'compiler-cache';
-    const COMPILER_PROJECT = 'project';
+    const MODE_FILES = 1<<0;
+    const MODE_DIRECTORIES = 1<<1;
+    const MODE_SYMLINKS = 1<<2;
 
-    const COMPILER_SOURCE_DIRECTORIES = 'source-dirs';
-    const COMPILER_DEBUG = 'debug';
-    const COMPILER_TEST = 'test';
+    /** @var string */
+    private $format;
+    /** @var int */
+    private $mode;
 
-    const COMPILER_ZERO_LINKS = 'zero';
-
-    const SKYLINE_APP_DATA_DIR = 'skyline-add-data';
-    const SKYLINE_PUBLIC_DATA_DIR = 'skyline-public-data';
-
-    const SKYLINE_DIR_COMPILED = 'dir-compiled';
-    const SKYLINE_DIR_CLASSES = 'dir-classes';
-    const SKYLINE_DIR_CONFIG = 'dir-config';
-    const SKYLINE_DIR_MODULES = 'dir-modules';
-    const SKYLINE_DIR_USER_INTERFACE = 'dir-ui';
-
+    /** @var bool */
+    private $caseSensitive;
 
     /**
-     * Defaults
-     * @var array
+     * Pattern constructor.
+     * @param string $format
+     * @param int $mode
+     * @param bool $caseSensitive
      */
-    private static $defaults = [
-        self::COMPILER_CACHE_FILENAME => "./compiler-cache.php",
-        self::SKYLINE_APP_DATA_DIR => 'SkylineAppData',
-        self::SKYLINE_PUBLIC_DATA_DIR => 'public_html',
-
-        self::SKYLINE_DIR_COMPILED => 'Compiled',
-        self::SKYLINE_DIR_CLASSES => 'Classes',
-        self::SKYLINE_DIR_CONFIG => 'Config',
-        self::SKYLINE_DIR_MODULES => 'Modules',
-        self::SKYLINE_DIR_USER_INTERFACE => 'UI',
-
-        self::COMPILER_DEBUG => false,
-        self::COMPILER_TEST => false,
-        self::COMPILER_ZERO_LINKS => false
-    ];
+    public function __construct(string $format, int $mode = self::MODE_FILES | self::MODE_DIRECTORIES, bool $caseSensitive = false)
+    {
+        $this->format = $format;
+        $this->mode = $mode;
+        $this->caseSensitive = $caseSensitive;
+    }
 
     /**
-     * Fetches a configuration
+     * Returns true, if the filename matches
      *
-     * @param $array
-     * @param $name
-     * @param null $default
-     * @return mixed|null
+     * @param string $filename
+     * @return bool
      */
-    public static function get($array, $name, $default = NULL) {
-        return $array[$name] ?? self::$defaults[$name] ?? $default;
+    public function match(string $filename): bool {
+        if(
+            (is_file($filename) && $this->getMode() & self::MODE_FILES)      ||
+            (is_link($filename) && $this->getMode() & self::MODE_SYMLINKS)   ||
+            (is_dir($filename) && $this->getMode() & self::MODE_DIRECTORIES)
+        )
+            return fnmatch($this->getFormat(), $filename, $this->isCaseSensitive() ? FNM_CASEFOLD : 0);
+        return false;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCaseSensitive(): bool
+    {
+        return $this->caseSensitive;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMode(): int
+    {
+        return $this->mode;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFormat(): string
+    {
+        return $this->format;
     }
 }

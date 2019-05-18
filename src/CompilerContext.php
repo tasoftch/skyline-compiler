@@ -365,4 +365,22 @@ class CompilerContext
     public function useZeroLinks(): bool {
         return CC::get($this->getConfiguration(), CC::COMPILER_ZERO_LINKS);
     }
+
+    /**
+     * If set true, the compiler runs with --dev option.
+     *
+     * @return bool
+     */
+    public function isDevelopmentContext(): bool {
+        return CC::get($this->getConfiguration(), CC::COMPILER_DEBUG);
+    }
+
+    /**
+     * If set true, the compiler runs with --test option
+     *
+     * @return bool
+     */
+    public function isTestContext(): bool {
+        return CC::get($this->getConfiguration(), CC::COMPILER_TEST);
+    }
 }
