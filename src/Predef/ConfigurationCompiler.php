@@ -63,8 +63,16 @@ class ConfigurationCompiler extends AbstractCompiler
     {
         $sourceContainer = new SourceContainer();
 
-        $addFile = function($file) use ($sourceContainer, $context) {
+        $addFile = function($file, $skipCheck = false) use ($sourceContainer, $context) {
             if(is_file($file)) {
+                if(!$skipCheck && in_array(basename($file), [
+                    $this->info[ static::INFO_CUSTOM_FILENAME_KEY ],
+                    $this->info[ static::INFO_DEV_FILENAME_KEY ],
+                    $this->info[ static::INFO_TEST_FILENAME_KEY ]
+                ])) {
+                    $context->getLogger()->logWarning("Source %s conflicts with default", NULL, $file);
+                    return;
+                }
                 $context->getLogger()->logText("Source for %s found: %s", LoggerInterface::VERBOSITY_VERY_VERBOSE, NULL, $this->getCompilerID(), $file);
 
                 try {
@@ -86,7 +94,7 @@ class ConfigurationCompiler extends AbstractCompiler
             foreach($context->getProjectSearchPaths(SearchPathAttribute::SEARCH_PATH_USER_CONFIG) as $configPath) {
                 if(is_file($f = "$configPath/$defaultFile")) {
                     $context->getLogger()->logText("DEFAULT for %s: %s", LoggerInterface::VERBOSITY_VERY_VERBOSE, NULL, $this->getCompilerID(), $f);
-                    $addFile($f);
+                    $addFile($f, true);
                     break;
                 }
             }
@@ -96,7 +104,7 @@ class ConfigurationCompiler extends AbstractCompiler
             foreach($context->getProjectSearchPaths(SearchPathAttribute::SEARCH_PATH_USER_CONFIG) as $configPath) {
                 if(is_file($f = "$configPath/$defaultFile")) {
                     $context->getLogger()->logText("DEV for %s: %s", LoggerInterface::VERBOSITY_VERY_VERBOSE, NULL, $this->getCompilerID(), $f);
-                    $addFile($f);
+                    $addFile($f, true);
                     break;
                 }
             }
@@ -106,7 +114,7 @@ class ConfigurationCompiler extends AbstractCompiler
             foreach($context->getProjectSearchPaths(SearchPathAttribute::SEARCH_PATH_USER_CONFIG) as $configPath) {
                 if(is_file($f = "$configPath/$defaultFile")) {
                     $context->getLogger()->logText("TEST for %s: %s", LoggerInterface::VERBOSITY_VERY_VERBOSE, NULL, $this->getCompilerID(), $f);
-                    $addFile($f);
+                    $addFile($f, true);
                     break;
                 }
             }
@@ -151,6 +159,8 @@ class ConfigurationCompiler extends AbstractCompiler
         foreach($context->getSourceCodeManager()->yieldSourceFiles($pattern, $configDirs) as $fileName => $file) {
             if(basename($fileName) == $defaultFile)
                 continue;
+
+            echo $fileName, "\n";
 
             yield $fileName => $file;
         }

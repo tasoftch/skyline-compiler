@@ -128,6 +128,11 @@ class SkylineEntryPointFileCompiler extends AbstractCompiler
         foreach ($INI as $ik => $iv)
             $theINI .= "ini_set('$ik', $iv);\n";
 
+
+        $DEBUG = $context->isDevelopmentContext();
+        $TEST = $context->isTestContext();
+
+
         $content = <<< EOT
 <?php
 /**
@@ -168,6 +173,9 @@ use $BOOTSTRAP_CLASS as Bootstrap;
 use Skyline\Kernel\Service\CORSService as CORS;
 
 $theINI
+
+define("SKY_DEBUG", $DEBUG);
+define("SKY_TEST", $TEST);
 
 $FILTERS
 $ROOT
