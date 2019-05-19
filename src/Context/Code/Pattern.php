@@ -74,7 +74,7 @@ class Pattern
             (is_link($filename) && $this->getMode() & self::MODE_SYMLINKS)   ||
             (is_dir($filename) && $this->getMode() & self::MODE_DIRECTORIES)
         )
-            return fnmatch($this->getFormat(), $filename, $this->isCaseSensitive() ? FNM_CASEFOLD : 0);
+            return fnmatch($this->getFormat(), basename($filename), $this->isCaseSensitive() ? FNM_CASEFOLD : 0);
         return false;
     }
 
