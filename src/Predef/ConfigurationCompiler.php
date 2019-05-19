@@ -160,8 +160,6 @@ class ConfigurationCompiler extends AbstractCompiler
             if(basename($fileName) == $defaultFile)
                 continue;
 
-            echo $fileName, "\n";
-
             yield $fileName => $file;
         }
     }

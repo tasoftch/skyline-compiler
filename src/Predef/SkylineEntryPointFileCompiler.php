@@ -112,25 +112,9 @@ class SkylineEntryPointFileCompiler extends AbstractCompiler
             }
         }
 
-        $INI = [];
 
-        $INI["display_errors"] = 0;
-        $INI["error_reporting"] = E_ALL & ~E_DEPRECATED & ~E_STRICT;
-        $INI["log_errors"] = 1;
-
-        if($context->isDevelopmentContext()) {
-            $INI["display_errors"] = 1;
-            $INI["error_reporting"] = E_ALL;
-            $INI["log_errors"] = 0;
-        }
-
-        $theINI = "";
-        foreach ($INI as $ik => $iv)
-            $theINI .= "ini_set('$ik', $iv);\n";
-
-
-        $DEBUG = $context->isDevelopmentContext();
-        $TEST = $context->isTestContext();
+        $DEBUG = var_export($context->isDevelopmentContext(), true);
+        $TEST = var_export($context->isTestContext(), true);
 
 
         $content = <<< EOT
@@ -171,8 +155,6 @@ class SkylineEntryPointFileCompiler extends AbstractCompiler
 use $APP_CLASS as Application;
 use $BOOTSTRAP_CLASS as Bootstrap;
 use Skyline\Kernel\Service\CORSService as CORS;
-
-$theINI
 
 define("SKY_DEBUG", $DEBUG);
 define("SKY_TEST", $TEST);
