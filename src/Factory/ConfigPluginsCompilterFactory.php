@@ -35,20 +35,25 @@
 namespace Skyline\Compiler\Factory;
 
 
-class CompleteCompilersFactory extends AbstractFactoryFactory
+use Skyline\Compiler\Predef\ConfigurationCompiler;
+use Skyline\Compiler\Predef\OrderedConfigurationCompiler;
+
+class ConfigPluginsCompilterFactory extends AbstractExtendedCompilerFactory
 {
-    protected function getFactoryClassNames(): array
+    protected function getCompilerDescriptions(): array
     {
         return [
-            BasicCompilersFactory::class,
-            ConfigMainCompilerFactory::class,
-            ConfigParameterCompilerFactory::class,
-            ConfigComponentsCompilerFactory::class,
-            ConfigRenderCompilerFactory::class,
-            ConfigRoutingCompilerFactory::class,
-            ConfigPluginsCompilterFactory::class,
-            CreateHTAccessCompilerFactory::class,
-            SkylineEntryPointCompilerFactory::class
+            'parameter-config' => [
+                self::COMPILER_CLASS_KEY                            => OrderedConfigurationCompiler::class,
+                ConfigurationCompiler::INFO_TARGET_FILENAME_KEY     => 'plugins.php',
+                ConfigurationCompiler::INFO_PATTERN_KEY             => '/^.*?\.plugins\.php$/i',
+                ConfigurationCompiler::INFO_CUSTOM_FILENAME_KEY     => 'plugins.php',
+                ConfigurationCompiler::INFO_DEV_FILENAME_KEY        => "plugins.dev.php",
+                ConfigurationCompiler::INFO_TEST_FILENAME_KEY       => "plugins.test.php",
+                self::COMPILER_DEPENDENCIES_KEY => [
+                    'composer-packages-order'
+                ]
+            ]
         ];
     }
 }
