@@ -51,7 +51,9 @@ class BasicCompilersFactory extends AbstractExtendedCompilerFactory
                     'directoryNames' => [
                         CC::get([], CC::SKYLINE_DIR_CLASSES),
                         CC::get([], CC::SKYLINE_DIR_COMPILED),
-                        CC::get([], CC::SKYLINE_DIR_CONFIG)
+                        CC::get([], CC::SKYLINE_DIR_CONFIG),
+                        CC::get([], CC::SKYLINE_DIR_MODULES),
+                        CC::get([], CC::SKYLINE_DIR_LOGS)
                     ]
                 ]
             ],

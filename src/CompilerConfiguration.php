@@ -53,6 +53,7 @@ final class CompilerConfiguration
     const SKYLINE_DIR_CLASSES = 'dir-classes';
     const SKYLINE_DIR_CONFIG = 'dir-config';
     const SKYLINE_DIR_MODULES = 'dir-modules';
+    const SKYLINE_DIR_LOGS = 'dir-logs';
     const SKYLINE_DIR_USER_INTERFACE = 'dir-ui';
 
 
@@ -70,6 +71,8 @@ final class CompilerConfiguration
         self::SKYLINE_DIR_CONFIG => 'Config',
         self::SKYLINE_DIR_MODULES => 'Modules',
         self::SKYLINE_DIR_USER_INTERFACE => 'UI',
+        self::SKYLINE_DIR_LOGS => 'Logs',
+
 
         self::COMPILER_DEBUG => false,
         self::COMPILER_TEST => false,
