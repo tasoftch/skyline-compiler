@@ -45,7 +45,6 @@ class CompleteCompilersFactory extends AbstractFactoryFactory
             ConfigParameterCompilerFactory::class,
             ConfigComponentsCompilerFactory::class,
             ConfigRenderCompilerFactory::class,
-            ConfigRoutingCompilerFactory::class,
             ConfigPluginsCompilterFactory::class,
             CreateHTAccessCompilerFactory::class,
             SkylineEntryPointCompilerFactory::class
