@@ -41,6 +41,6 @@ class TestsExcludingSourceCodeManager extends SourceCodeManager
     {
         if(is_dir($filename) && preg_match("/^tests?$/i", basename($filename)))
             return false;
-        return true;
+        return parent::shouldIncludeFilename($filename);
     }
 }

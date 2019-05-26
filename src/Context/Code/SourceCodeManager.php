@@ -53,6 +53,8 @@ class SourceCodeManager
     protected $sourceFiles;
     protected $excludedFiles;
 
+    protected $restrictSourcesToProject = false;
+
     /**
      * SourceCodeManager constructor.
      * @param CompilerContext $context
@@ -180,6 +182,27 @@ class SourceCodeManager
      * @return bool
      */
     protected function shouldIncludeFilename(string $filename): bool {
+        if($this->restrictSourcesToProject()) {
+            $pdir = $this->getContext()->getProject()->getProjectRootDirectory();
+            if(stripos($filename, $pdir) !== 0)
+                return false;
+        }
         return true;
+    }
+
+    /**
+     * @return bool
+     */
+    public function restrictSourcesToProject(): bool
+    {
+        return $this->restrictSourcesToProject;
+    }
+
+    /**
+     * @param bool $restrictSourcesToProject
+     */
+    public function setRestrictSourcesToProject(bool $restrictSourcesToProject): void
+    {
+        $this->restrictSourcesToProject = $restrictSourcesToProject;
     }
 }
