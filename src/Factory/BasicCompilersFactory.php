@@ -52,8 +52,9 @@ class BasicCompilersFactory extends AbstractExtendedCompilerFactory
                         CC::get([], CC::SKYLINE_DIR_CLASSES),
                         CC::get([], CC::SKYLINE_DIR_COMPILED),
                         CC::get([], CC::SKYLINE_DIR_CONFIG),
-                        CC::get([], CC::SKYLINE_DIR_MODULES),
-                        CC::get([], CC::SKYLINE_DIR_LOGS)
+                        CC::get([], CC::SKYLINE_DIR_LOGS),
+                        CC::get([], CC::SKYLINE_DIR_TEMPLATES),
+                        CC::get([], CC::SKYLINE_DIR_ACTION_CONTROLLERS)
                     ]
                 ]
             ],

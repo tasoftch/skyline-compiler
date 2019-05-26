@@ -52,9 +52,11 @@ final class CompilerConfiguration
     const SKYLINE_DIR_COMPILED = 'dir-compiled';
     const SKYLINE_DIR_CLASSES = 'dir-classes';
     const SKYLINE_DIR_CONFIG = 'dir-config';
-    const SKYLINE_DIR_MODULES = 'dir-modules';
     const SKYLINE_DIR_LOGS = 'dir-logs';
     const SKYLINE_DIR_USER_INTERFACE = 'dir-ui';
+    const SKYLINE_DIR_TEMPLATES = 'dir-templates';
+    const SKYLINE_DIR_ACTION_CONTROLLERS = 'dir-controllers';
+
 
 
     /**
@@ -69,7 +71,8 @@ final class CompilerConfiguration
         self::SKYLINE_DIR_COMPILED => 'Compiled',
         self::SKYLINE_DIR_CLASSES => 'Classes',
         self::SKYLINE_DIR_CONFIG => 'Config',
-        self::SKYLINE_DIR_MODULES => 'Modules',
+        self::SKYLINE_DIR_TEMPLATES => 'Templates',
+        self::SKYLINE_DIR_ACTION_CONTROLLERS => 'Classes/Controller',
         self::SKYLINE_DIR_USER_INTERFACE => 'UI',
         self::SKYLINE_DIR_LOGS => 'Logs',
 
