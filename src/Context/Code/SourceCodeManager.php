@@ -103,7 +103,7 @@ class SourceCodeManager
                 $iterator = new RecursiveDirectoryIterator($path, RecursiveDirectoryIterator::SKIP_DOTS | RecursiveDirectoryIterator::FOLLOW_SYMLINKS);
 
                 foreach($iterateOverDirectory($iterator) as $fn => $file) {
-                    $this->sourceFiles[$name][$fn] = $file;
+                    $this->sourceFiles["$name"]["$fn"] = $file;
                 }
             }
         };
