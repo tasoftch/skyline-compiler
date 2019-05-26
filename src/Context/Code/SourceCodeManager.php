@@ -83,8 +83,8 @@ class SourceCodeManager
      */
     public function yieldSourceFiles(string $fileNameRegex = NULL, array $searchPaths = NULL) {
         $loadSearchPathIfNeeded = function($path, $name) {
-            if(!isset($this->sourceFiles[$name])) {
-                $this->sourceFiles[$name] = [];
+            if(!isset($this->sourceFiles["$name"])) {
+                $this->sourceFiles["$name"] = [];
 
                 $iterateOverDirectory = function(RecursiveDirectoryIterator $iterator) use (&$iterateOverDirectory) {
                     /** @var SplFileInfo $item */
