@@ -149,7 +149,7 @@ class ConfigurationCompiler extends AbstractCompiler
      */
     protected function yieldConfigurationFiles(CompilerContext $context): Generator{
         $configDirs = [];
-        foreach($context->getProjectSearchPaths(SearchPathAttribute::SEARCH_PATH_USER_CONFIG) as $configDir) {
+        foreach($context->getProjectSearchPaths(SearchPathAttribute::SEARCH_PATH_CONFIG) as $configDir) {
             $configDirs[] = (string)$configDir;
         }
 
