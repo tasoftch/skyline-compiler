@@ -145,8 +145,8 @@ class SourceCodeManager
                 if(is_numeric($key))
                     $key = $value;
 
-                if(isset($defaults[$value])) {
-                    $value = $defaults[$value];
+                if(isset($defaults["$value"])) {
+                    $value = $defaults["$value"];
                 }
 
                 $addSrcDir($value, $key);
