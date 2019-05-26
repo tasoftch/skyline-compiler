@@ -184,8 +184,9 @@ class SourceCodeManager
     protected function shouldIncludeFilename(string $filename): bool {
         if($this->restrictSourcesToProject()) {
             $pdir = $this->getContext()->getProject()->getProjectRootDirectory();
-            if(stripos($filename, $pdir) !== 0)
+            if(stripos(realpath($filename), $pdir) !== 0) {
                 return false;
+            }
         }
         return true;
     }
