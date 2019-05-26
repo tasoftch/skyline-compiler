@@ -73,6 +73,6 @@ class PatternExcludingSourceCodeManager extends SourceCodeManager
             if($pattern->match($filename))
                 return false;
         }
-        return true;
+        return parent::shouldIncludeFilename($filename);
     }
 }
