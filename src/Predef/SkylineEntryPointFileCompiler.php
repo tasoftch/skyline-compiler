@@ -81,7 +81,7 @@ class SkylineEntryPointFileCompiler extends AbstractCompiler
         $ctxParams = $context->getContextParameters();
 
         $BOOTSTRAP_CLASS = $ctxParams->getBootstrapClass() ?: Bootstrap::class;
-        $APP_CLASS = $ctxParams->getApplicationClass() ?: "Skyline\Kernel\Application";
+        $APP_CLASS = $ctxParams->getApplicationClass() ?: "Skyline\Application\Application";
 
 
         $hosts = $context->getProject()->getAttribute(AttributeInterface::HOSTS_ATTR_NAME);
@@ -154,7 +154,7 @@ class SkylineEntryPointFileCompiler extends AbstractCompiler
 
 use $APP_CLASS as Application;
 use $BOOTSTRAP_CLASS as Bootstrap;
-use Skyline\Kernel\Service\CORSService as CORS;
+use Skyline\Application\Service\CORSService as CORS;
 
 define("SKY_DEBUG", $DEBUG);
 define("SKY_TEST", $TEST);
