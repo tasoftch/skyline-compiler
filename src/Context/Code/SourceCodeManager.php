@@ -40,6 +40,7 @@ use Generator;
 use RecursiveDirectoryIterator;
 use Skyline\Compiler\CompilerConfiguration as CC;
 use Skyline\Compiler\CompilerContext;
+use Skyline\Compiler\Predef\ComposerPackagesOrderCompiler;
 use Skyline\Compiler\Project\Attribute\SearchPathAttribute;
 use SplFileInfo;
 
@@ -54,6 +55,7 @@ class SourceCodeManager
     protected $excludedFiles;
 
     protected $restrictSourcesToProject = false;
+    protected $respectPackageOrder = false;
 
     /**
      * SourceCodeManager constructor.
@@ -82,6 +84,8 @@ class SourceCodeManager
      * @return Generator
      */
     public function yieldSourceFiles(string $fileNameRegex = NULL, array $searchPaths = NULL) {
+        SourceFile::$stringifyReal = $this->context->useZeroLinks();
+
         $loadSearchPathIfNeeded = function($path, $name) {
             if(!isset($this->sourceFiles["$name"])) {
                 $this->sourceFiles["$name"] = [];
@@ -158,9 +162,32 @@ class SourceCodeManager
             if(!in_array($bank, $searchPaths))
                 continue;
 
-            foreach($files as $fileName => $file) {
-                if(NULL == $fileNameRegex || preg_match($fileNameRegex, basename($fileName)))
+            if($this->respectPackageOrder() && $packageFiles = array_values($this->context->getValueCache()->fetchValue(ComposerPackagesOrderCompiler::CACHE_PACKAGES_NAME))) {
+                $theFiles = [];
+
+                foreach($files as $fileName => $file) {
+                    if(NULL == $fileNameRegex || preg_match($fileNameRegex, basename($fileName)))
+                        $theFiles[$fileName] = $file;
+                }
+
+                uksort($theFiles, function($n1, $n2) use ($packageFiles) {
+                    $i1 = array_search($n1, $packageFiles);
+                    $i2 = array_search($n2, $packageFiles);
+
+                    if($i1 === false)
+                        return 1;
+                    if($i2 === false)
+                        return -1;
+                    return $i1 <=> $i2;
+                });
+
+                foreach ($theFiles as $fileName => $file)
                     yield $fileName => $file;
+            } else {
+                foreach($files as $fileName => $file) {
+                    if(NULL == $fileNameRegex || preg_match($fileNameRegex, basename($fileName)))
+                        yield $fileName => $file;
+                }
             }
         }
     }
@@ -205,5 +232,21 @@ class SourceCodeManager
     public function setRestrictSourcesToProject(bool $restrictSourcesToProject): void
     {
         $this->restrictSourcesToProject = $restrictSourcesToProject;
+    }
+
+    /**
+     * @return bool
+     */
+    public function respectPackageOrder(): bool
+    {
+        return $this->respectPackageOrder;
+    }
+
+    /**
+     * @param bool $respectPackageOrder
+     */
+    public function setRespectPackageOrder(bool $respectPackageOrder): void
+    {
+        $this->respectPackageOrder = $respectPackageOrder;
     }
 }

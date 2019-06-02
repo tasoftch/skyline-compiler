@@ -39,11 +39,14 @@
  * Created on 2019-04-21 21:22 by thomas
  */
 
+use Skyline\Compiler\CompilerConfiguration;
 use Skyline\Compiler\CompilerContext;
 use PHPUnit\Framework\TestCase;
 use Skyline\Compiler\Context\Code\SourceCodeManager;
 use Skyline\Compiler\Context\Code\TestsExcludingSourceCodeManager;
+use Skyline\Compiler\Predef\ComposerPackagesOrderCompiler;
 use Skyline\Compiler\Project\Loader\XML;
+use TASoft\Config\Config;
 
 class SourceCodeManagerTest extends TestCase
 {
@@ -73,5 +76,44 @@ class SourceCodeManagerTest extends TestCase
             $this->assertEquals("Tests/Projects/.DS_Store", $fn);
             break;
         }
+    }
+
+    public function testZeroSourceFiles() {
+        $xml = new XML(__DIR__ . "/Projects/project.xml");
+        /** @var MyProject $proj */
+        $proj = $xml->getProject();
+        $ctx = new CompilerContext($proj);
+        $ctx->setConfiguration(new Config([
+            CompilerConfiguration::COMPILER_ZERO_LINKS => true
+        ]));
+
+        $ctx->setSourceCodeManager(new SourceCodeManager($ctx));
+
+        foreach($ctx->getSourceCodeManager()->yieldSourceFiles('/^AbstractContaineredCollection\.php$/i') as $fn => $file) {
+            $this->assertEquals(getcwd()."/vendor/tasoft/collection/src/AbstractContaineredCollection.php", $fn);
+            break;
+        }
+    }
+
+    public function testOrderedSourceFiles() {
+        $xml = new XML(__DIR__ . "/Projects/project.xml");
+        /** @var MyProject $proj */
+        $proj = $xml->getProject();
+        $ctx = new CompilerContext($proj);
+
+        $ctx->setConfiguration(new Config([
+            CompilerConfiguration::COMPILER_ZERO_LINKS => false
+        ]));
+
+        $compiler = new ComposerPackagesOrderCompiler('id', "./", false);
+        $compiler->compile($ctx);
+
+        $scm = new SourceCodeManager($ctx);
+        $ctx->setSourceCodeManager($scm);
+
+        $scm->setRespectPackageOrder(true);
+
+        $gen = $ctx->getSourceCodeManager()->yieldSourceFiles('/^composer\.json$/i');
+        print_r(array_keys(iterator_to_array($gen)));
     }
 }
