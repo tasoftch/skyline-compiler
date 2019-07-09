@@ -45,7 +45,7 @@ use Skyline\Compiler\Project\Attribute\SearchPathAttribute;
 use TASoft\Config\Compiler\BadSourceException;
 use TASoft\Config\Compiler\Source\FileSource;
 use TASoft\Config\Compiler\Source\SourceContainer;
-use TASoft\Config\Compiler\StandardCompiler;
+use TASoft\Config\Compiler\StandardFactoryCompiler;
 use Traversable;
 
 class ConfigurationCompiler extends AbstractCompiler
@@ -134,7 +134,7 @@ class ConfigurationCompiler extends AbstractCompiler
      * @param CompilerContext $context
      */
     protected function compileConfiguration(Traversable $source, string $target, CompilerContext $context) {
-        $compiler = new StandardCompiler();
+        $compiler = new StandardFactoryCompiler();
         $compiler->setSource($source);
 
         $compiler->setTarget($target);
