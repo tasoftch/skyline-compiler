@@ -43,7 +43,7 @@ class ConfigPluginsCompilterFactory extends AbstractExtendedCompilerFactory
     protected function getCompilerDescriptions(): array
     {
         return [
-            'parameter-config' => [
+            'plugins-config' => [
                 self::COMPILER_CLASS_KEY                            => OrderedConfigurationCompiler::class,
                 ConfigurationCompiler::INFO_TARGET_FILENAME_KEY     => 'plugins.php',
                 ConfigurationCompiler::INFO_PATTERN_KEY             => '/^.*?\.plugins\.php$/i',
