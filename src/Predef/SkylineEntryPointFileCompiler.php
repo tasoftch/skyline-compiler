@@ -186,7 +186,7 @@ EOT;
 
             $pr = $proj->getProjectRootDirectory() . DIRECTORY_SEPARATOR . $proj->getProjectPublicDirectory() . DIRECTORY_SEPARATOR;
             $root = PathTool::relative( "$pr",$proj->getProjectRootDirectory().DIRECTORY_SEPARATOR);
-            return "chdir( getcwd() . DIRECTORY_SEPARATOR . '$root');";
+            return "chdir( dirname(__FILE__) . DIRECTORY_SEPARATOR . '$root');";
         }
 
         return "";
