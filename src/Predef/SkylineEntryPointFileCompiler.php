@@ -184,8 +184,12 @@ EOT;
             if($context->useZeroLinks())
                 return sprintf("chdir('%s');", $proj->getProjectRootDirectory());
 
-            $pr = $proj->getProjectRootDirectory() . DIRECTORY_SEPARATOR . $proj->getProjectPublicDirectory() . DIRECTORY_SEPARATOR;
-            $root = PathTool::relative( "$pr",$proj->getProjectRootDirectory().DIRECTORY_SEPARATOR);
+            if($root = $proj->getAttribute("pub2root")) {
+            } else {
+                $pr = $proj->getProjectRootDirectory() . DIRECTORY_SEPARATOR . $proj->getProjectPublicDirectory() . DIRECTORY_SEPARATOR;
+                $root = PathTool::relative( "$pr",$proj->getProjectRootDirectory().DIRECTORY_SEPARATOR);
+            }
+
             return "chdir( dirname(__FILE__) . DIRECTORY_SEPARATOR . '$root');";
         }
 
