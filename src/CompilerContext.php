@@ -50,6 +50,7 @@ use Skyline\Compiler\Project\ProjectInterface;
 use Skyline\Kernel\Service\Error\AbstractErrorHandlerService;
 use TASoft\Collection\DependencyCollection;
 use TASoft\Config\Config;
+use TASoft\Util\PathTool;
 use Throwable;
 
 class CompilerContext
@@ -80,6 +81,8 @@ class CompilerContext
 
     /** @var CompilerContextParameterCollection */
     private $contextParameters;
+
+    private static $currentCompiler;
 
     /**
      * CompilerContext constructor.
@@ -307,7 +310,7 @@ class CompilerContext
                 }
             });
 
-
+            self::$currentCompiler = $this;
 
             /** @var CompilerInterface $compiler */
             foreach($this->getOrganizedCompilers() as $compiler) {
@@ -318,7 +321,17 @@ class CompilerContext
             $this->getLogger()->logException($throwable);
         } finally {
             restore_error_handler();
+            self::$currentCompiler = NULL;
         }
+    }
+
+    /**
+     * While compilation phase, you can access the compiler context from everywhere
+     *
+     * @return CompilerContext|null
+     */
+    public static function getCurrentCompiler(): ?CompilerContext {
+        return self::$currentCompiler;
     }
 
     /**
@@ -382,5 +395,17 @@ class CompilerContext
      */
     public function isTestContext(): bool {
         return CC::get($this->getConfiguration(), CC::COMPILER_TEST);
+    }
+
+    /**
+     * transforms an absolute path into a project relative path
+     *
+     * @param string $targetFile
+     * @return string
+     */
+    public function getRelativeProjectPath(string $targetFile): string {
+        $proj = $this->getProject()->getProjectRootDirectory();
+
+        return PathTool::relative($proj, $targetFile);
     }
 }
