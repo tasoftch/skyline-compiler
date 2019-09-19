@@ -90,6 +90,7 @@ class ComposerPackagesOrderCompiler extends AbstractCompiler
     public function compile(CompilerContext $context)
     {
         $dependencyCollection = new ComposerPackageDependencyCollection();
+        $dependencyCollection->setCircularDependencyAllowed(true);
         $root = $this->getComposer( $this->scanDir );
 
         $register = function($json, $path) use ($dependencyCollection) {
