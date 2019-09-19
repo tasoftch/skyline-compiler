@@ -406,6 +406,12 @@ class CompilerContext
     public function getRelativeProjectPath(string $targetFile): string {
         $proj = $this->getProject()->getProjectRootDirectory();
 
+        if($proj[ strlen($proj)-1 ] != DIRECTORY_SEPARATOR)
+            $proj.=DIRECTORY_SEPARATOR;
+
+        if($this->useZeroLinks())
+            return realpath($targetFile);
+
         return PathTool::relative($proj, $targetFile);
     }
 }
