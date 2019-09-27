@@ -45,7 +45,8 @@ class CompleteCompilersFactory extends AbstractFactoryFactory
             ConfigParameterCompilerFactory::class,
             ConfigPluginsCompilterFactory::class,
             CreateHTAccessCompilerFactory::class,
-            SkylineEntryPointCompilerFactory::class
+            SkylineEntryPointCompilerFactory::class,
+            ExposeSymbolsCompilerFactory::class
         ];
     }
 }

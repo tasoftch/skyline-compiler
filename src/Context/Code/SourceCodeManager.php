@@ -54,6 +54,8 @@ class SourceCodeManager
     protected $sourceFiles;
     protected $excludedFiles;
 
+    protected $loadedSearchPaths = [];
+
     protected $restrictSourcesToProject = false;
     protected $respectPackageOrder = false;
 
@@ -87,8 +89,10 @@ class SourceCodeManager
         SourceFile::$stringifyReal = $this->context->useZeroLinks();
 
         $loadSearchPathIfNeeded = function($path, $name) {
-            if(!isset($this->sourceFiles["$name"])) {
-                $this->sourceFiles["$name"] = [];
+            if(!isset($this->loadedSearchPaths["$name"]["$path"])) {
+                if(!isset($this->sourceFiles["$name"]))
+                    $this->sourceFiles["$name"] = [];
+                $this->loadedSearchPaths["$name"]["$path"] = 1;
 
                 $iterateOverDirectory = function(RecursiveDirectoryIterator $iterator) use (&$iterateOverDirectory) {
                     /** @var SplFileInfo $item */
@@ -128,7 +132,7 @@ class SourceCodeManager
                 }
             }
             elseif(is_dir($dirsOrDir))
-               $loadSearchPathIfNeeded($dirsOrDir, $kind);
+                $loadSearchPathIfNeeded($dirsOrDir, $kind);
             else
                 $notFound($dirsOrDir);
         };
