@@ -429,7 +429,7 @@ class CompilerContext
         if(!$serviceManager) {
             if(($f = $this->getValueCache()->fetchValue("main-config")) && ($p = $this->getValueCache()->fetchValue("parameter-config"))) {
                 $config = require $this->getSkylineAppDirectory( CompilerConfiguration::SKYLINE_DIR_COMPILED ) . DIRECTORY_SEPARATOR . $f;
-                $serviceManager = new ServiceManager($config[ MainKernelConfig::CONFIG_SERVICES ]);
+                $serviceManager = ServiceManager::generalServiceManager($config[ MainKernelConfig::CONFIG_SERVICES ]);
 
                 $parameters = require $this->getSkylineAppDirectory( CompilerConfiguration::SKYLINE_DIR_COMPILED ) . DIRECTORY_SEPARATOR . $p;
                 foreach($parameters as $parameterName => $parameterValue)
