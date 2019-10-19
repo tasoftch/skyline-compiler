@@ -47,9 +47,11 @@ use Skyline\Compiler\Project\Attribute\AttributeInterface;
 use Skyline\Compiler\Project\Attribute\CompilerContextParameterCollection;
 use Skyline\Compiler\Project\Attribute\SearchPathCollection;
 use Skyline\Compiler\Project\ProjectInterface;
+use Skyline\Kernel\Config\MainKernelConfig;
 use Skyline\Kernel\Service\Error\AbstractErrorHandlerService;
 use TASoft\Collection\DependencyCollection;
 use TASoft\Config\Config;
+use TASoft\Service\ServiceManager;
 use TASoft\Util\PathTool;
 use Throwable;
 
@@ -413,5 +415,29 @@ class CompilerContext
             return realpath($targetFile);
 
         return PathTool::relative($proj, $targetFile);
+    }
+
+    /**
+     * Loads the ServiceManager instance that is available in the final CMS.
+     *
+     *
+     * @return ServiceManager
+     * @throws \Exception If main-config and parameter-config compilers are not performed yet.
+     */
+    public function getServiceManager(): ServiceManager {
+        static $serviceManager = NULL;
+        if(!$serviceManager) {
+            if(($f = $this->getValueCache()->fetchValue("main-config")) && ($p = $this->getValueCache()->fetchValue("parameter-config"))) {
+                $config = require $this->getSkylineAppDirectory( CompilerConfiguration::SKYLINE_DIR_COMPILED ) . DIRECTORY_SEPARATOR . $f;
+                $serviceManager = new ServiceManager($config[ MainKernelConfig::CONFIG_SERVICES ]);
+
+                $parameters = require $this->getSkylineAppDirectory( CompilerConfiguration::SKYLINE_DIR_COMPILED ) . DIRECTORY_SEPARATOR . $p;
+                foreach($parameters as $parameterName => $parameterValue)
+                    $serviceManager->setParameter($parameterName, $parameterValue);
+            } else {
+                throw new \Exception("Using Service Manager is only available after compiling main config and parameter config");
+            }
+        }
+        return $serviceManager;
     }
 }

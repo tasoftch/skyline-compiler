@@ -66,10 +66,10 @@ class ConfigurationCompiler extends AbstractCompiler
         $addFile = function($file, $skipCheck = false) use ($sourceContainer, $context) {
             if(is_file($file)) {
                 if(!$skipCheck && in_array(basename($file), [
-                    $this->info[ static::INFO_CUSTOM_FILENAME_KEY ] ?? NULL,
-                    $this->info[ static::INFO_DEV_FILENAME_KEY ] ?? NULL,
-                    $this->info[ static::INFO_TEST_FILENAME_KEY ] ?? NULL
-                ])) {
+                        $this->info[ static::INFO_CUSTOM_FILENAME_KEY ] ?? NULL,
+                        $this->info[ static::INFO_DEV_FILENAME_KEY ] ?? NULL,
+                        $this->info[ static::INFO_TEST_FILENAME_KEY ] ?? NULL
+                    ])) {
                     $context->getLogger()->logWarning("Source %s conflicts with default", NULL, $file);
                     return;
                 }
@@ -124,6 +124,7 @@ class ConfigurationCompiler extends AbstractCompiler
         $cdir = $context->getSkylineAppDirectory(CompilerConfiguration::SKYLINE_DIR_COMPILED);
 
         $this->compileConfiguration($sourceContainer, "$cdir/$target", $context);
+        $context->getValueCache()->postValue($this->info[ static::INFO_TARGET_FILENAME_KEY ], $this->getCompilerID());
     }
 
     /**
