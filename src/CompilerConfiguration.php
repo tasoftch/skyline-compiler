@@ -45,6 +45,7 @@ final class CompilerConfiguration
     const COMPILER_TEST = 'test';
 
     const COMPILER_ZERO_LINKS = 'zero';
+    const COMPILER_WITH_PDO = 'with-pdo';
 
     const SKYLINE_APP_DATA_DIR = 'skyline-add-data';
     const SKYLINE_PUBLIC_DATA_DIR = 'skyline-public-data';

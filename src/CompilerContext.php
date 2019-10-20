@@ -400,6 +400,15 @@ class CompilerContext
     }
 
     /**
+     * Sets whether includes PDO resolving or not (if package skyline/pdo is installed)
+     *
+     * @return bool
+     */
+    public function includePDOResolving(): bool {
+        return CC::get($this->getConfiguration(), CC::COMPILER_WITH_PDO) ? true : false;
+    }
+
+    /**
      * transforms an absolute path into a project relative path
      *
      * @param string $targetFile
