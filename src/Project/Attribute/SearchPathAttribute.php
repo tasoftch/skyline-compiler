@@ -46,4 +46,5 @@ class SearchPathAttribute extends Attribute
     const SEARCH_PATH_CLASSES = 'classes';
     const SEARCH_PATH_TEMPLATES = 'templates';
     const SEARCH_PATH_ACTION_CONTROLLERS = 'controllers';
+    const SEARCH_PATH_MODULES = 'modules';
 }
