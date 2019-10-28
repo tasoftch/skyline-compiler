@@ -201,7 +201,8 @@ class SourceCodeManager
         return [
             CC::COMPILER_SOURCE_DIRECTORIES => CC::get($this->getContext()->getConfiguration(), CC::COMPILER_SOURCE_DIRECTORIES),
             SearchPathAttribute::SEARCH_PATH_VENDOR => $this->getContext()->getProjectSearchPaths( SearchPathAttribute::SEARCH_PATH_VENDOR ),
-            SearchPathAttribute::SEARCH_PATH_CLASSES => $this->getContext()->getProjectSearchPaths( SearchPathAttribute::SEARCH_PATH_CLASSES )
+            SearchPathAttribute::SEARCH_PATH_CLASSES => $this->getContext()->getProjectSearchPaths( SearchPathAttribute::SEARCH_PATH_CLASSES ),
+            SearchPathAttribute::SEARCH_PATH_MODULES => $this->getContext()->getProjectSearchPaths( SearchPathAttribute::SEARCH_PATH_MODULES )
         ];
     }
 
