@@ -45,7 +45,10 @@ use PHPUnit\Framework\TestCase;
 use Skyline\Compiler\Context\Code\SourceCodeManager;
 use Skyline\Compiler\Context\Code\TestsExcludingSourceCodeManager;
 use Skyline\Compiler\Predef\ComposerPackagesOrderCompiler;
+use Skyline\Compiler\Project\Attribute\SearchPathAttribute;
+use Skyline\Compiler\Project\Attribute\SearchPathCollection;
 use Skyline\Compiler\Project\Loader\XML;
+use Skyline\Compiler\Project\Project;
 use TASoft\Config\Config;
 
 class SourceCodeManagerTest extends TestCase
@@ -115,5 +118,29 @@ class SourceCodeManagerTest extends TestCase
 
         $gen = $ctx->getSourceCodeManager()->yieldSourceFiles('/^composer\.json$/i');
         print_r(array_keys(iterator_to_array($gen)));
+    }
+
+    public function testIfFileIsPartOfModule() {
+        $xml = new XML(__DIR__ . "/Projects/project.xml");
+        /** @var MyProject $proj */
+        $proj = $xml->getProject();
+        /** @var SearchPathCollection $attr */
+        $attr = $proj->getAttribute('searchPaths');
+
+        $attr->addSearchPath(new SearchPathAttribute(SearchPathAttribute::SEARCH_PATH_CLASSES, __DIR__ . "/TestClasses"));
+
+        $ctx = new CompilerContext($proj);
+
+
+        $scm = new SourceCodeManager($ctx);
+
+        $list = iterator_to_array( $scm->yieldSourceFiles("/.*\.php$/i", [SearchPathAttribute::SEARCH_PATH_CLASSES]) );
+        $this->assertCount(5, $list);
+
+        $list = array_filter($list, function($A) use ($scm) {
+            return $scm->isFilePartOfModule($A);
+        });
+
+        $this->assertCount(3, $list);
     }
 }

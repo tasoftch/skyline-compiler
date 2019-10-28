@@ -42,6 +42,7 @@ use Skyline\Compiler\CompilerConfiguration as CC;
 use Skyline\Compiler\CompilerContext;
 use Skyline\Compiler\Predef\ComposerPackagesOrderCompiler;
 use Skyline\Compiler\Project\Attribute\SearchPathAttribute;
+use Skyline\Module\Compiler\ModuleCompiler;
 use SplFileInfo;
 
 class SourceCodeManager
@@ -252,5 +253,24 @@ class SourceCodeManager
     public function setRespectPackageOrder(bool $respectPackageOrder): void
     {
         $this->respectPackageOrder = $respectPackageOrder;
+    }
+
+    /**
+     * This is a pseudo check, because skyline cms can be used with modules.
+     * If there are modules and the module compiler is available, then this method returns false if a file is inside a module directory.
+     * See package skyline/modules for further information.
+     *
+     * @param $file
+     */
+    public function isFilePartOfModule($file) {
+        if(class_exists(ModuleCompiler::class)) {
+            $projPath = dirname($this->getContext()->getProject()->getProjectRootDirectory());
+
+            while (count(explode($projPath, ($file = dirname($file)))) > 1) {
+                if(is_file($file . DIRECTORY_SEPARATOR . "module.cfg.php"))
+                    return true;
+            }
+        }
+        return false;
     }
 }
