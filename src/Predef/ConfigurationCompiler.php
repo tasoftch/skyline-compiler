@@ -52,6 +52,8 @@ class ConfigurationCompiler extends AbstractCompiler
 {
     private $info;
 
+    public $ignoreModuleConfiguration = true;
+
     const INFO_TARGET_FILENAME_KEY = 'target';
     const INFO_PATTERN_KEY = 'pattern';
     const INFO_CUSTOM_FILENAME_KEY = 'default';
@@ -65,6 +67,11 @@ class ConfigurationCompiler extends AbstractCompiler
 
         $addFile = function($file, $skipCheck = false) use ($sourceContainer, $context) {
             if(is_file($file)) {
+                if($this->ignoreModuleConfiguration && $context->getSourceCodeManager()->isFilePartOfModule($file)) {
+                    $context->getLogger()->logText("Source %s ignored: %s", LoggerInterface::VERBOSITY_VERY_VERBOSE, NULL, $this->getCompilerID(), $file);
+                    return;
+                }
+
                 if(!$skipCheck && in_array(basename($file), [
                         $this->info[ static::INFO_CUSTOM_FILENAME_KEY ] ?? NULL,
                         $this->info[ static::INFO_DEV_FILENAME_KEY ] ?? NULL,
