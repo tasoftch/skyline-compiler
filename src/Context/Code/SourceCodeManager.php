@@ -266,6 +266,7 @@ class SourceCodeManager
     public function isFilePartOfModule($file) {
         if(class_exists('Skyline\Module\Compiler\ModuleCompiler')) {
             $projPath = dirname($this->getContext()->getProject()->getProjectRootDirectory());
+            $file = realpath($file);
 
             while (count(explode($projPath, ($file = dirname($file)))) > 1) {
                 if(is_file($file . DIRECTORY_SEPARATOR . "module.cfg.php"))
