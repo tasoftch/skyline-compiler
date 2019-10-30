@@ -42,7 +42,6 @@ use Skyline\Compiler\CompilerConfiguration as CC;
 use Skyline\Compiler\CompilerContext;
 use Skyline\Compiler\Predef\ComposerPackagesOrderCompiler;
 use Skyline\Compiler\Project\Attribute\SearchPathAttribute;
-use Skyline\Module\Compiler\ModuleCompiler;
 use SplFileInfo;
 
 class SourceCodeManager
@@ -262,9 +261,10 @@ class SourceCodeManager
      * See package skyline/modules for further information.
      *
      * @param $file
+     * @return bool
      */
     public function isFilePartOfModule($file) {
-        if(class_exists(ModuleCompiler::class)) {
+        if(class_exists('Skyline\Module\Compiler\ModuleCompiler')) {
             $projPath = dirname($this->getContext()->getProject()->getProjectRootDirectory());
 
             while (count(explode($projPath, ($file = dirname($file)))) > 1) {
