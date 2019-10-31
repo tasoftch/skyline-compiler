@@ -34,9 +34,6 @@
 
 namespace Skyline\Compiler\Factory;
 
-
-use Skyline\Compiler\Predef\DirectoryProtectionCompiler;
-
 class CompleteCompilersFactory extends AbstractFactoryFactory
 {
     protected function getFactoryClassNames(): array
@@ -48,7 +45,7 @@ class CompleteCompilersFactory extends AbstractFactoryFactory
             ConfigPluginsCompilterFactory::class,
             CreateHTAccessCompilerFactory::class,
             SkylineEntryPointCompilerFactory::class,
-            DirectoryProtectionCompiler::class
+            DirectoryProtectionCompilerFactory::class
         ];
     }
 }
