@@ -32,23 +32,60 @@
  *
  */
 
-namespace Skyline\Compiler\Factory;
+namespace Skyline\Compiler\Predef;
 
 
-use Skyline\Compiler\Predef\DirectoryProtectionCompiler;
+use Skyline\Compiler\AbstractCompiler;
+use Skyline\Compiler\CompilerContext;
 
-class CompleteCompilersFactory extends AbstractFactoryFactory
+class DirectoryProtectionCompiler extends AbstractCompiler
 {
-    protected function getFactoryClassNames(): array
+    /** @var string[] */
+    private $directoryNames;
+
+
+    /**
+     * CreateDirectoriesCompiler constructor.
+     * @param string[] $directoryNames
+     */
+    public function __construct(string $compilerID, array $directoryNames)
     {
-        return [
-            BasicCompilersFactory::class,
-            ConfigMainCompilerFactory::class,
-            ConfigParameterCompilerFactory::class,
-            ConfigPluginsCompilterFactory::class,
-            CreateHTAccessCompilerFactory::class,
-            SkylineEntryPointCompilerFactory::class,
-            DirectoryProtectionCompiler::class
-        ];
+        parent::__construct($compilerID);
+        $this->directoryNames = $directoryNames;
+    }
+
+
+
+    public function compile(CompilerContext $context)
+    {
+        foreach($this->getDirectoryNames() as $dirName) {
+            if(is_dir($dirName)) {
+                $this->recursiveProtectDirectory(realpath($dirName));
+            }
+        }
+    }
+
+    private function recursiveProtectDirectory($directory) {
+        if($items = scandir($directory)) {
+            foreach($items as $item) {
+                if($item[0] == '.')
+                    continue;
+
+                if(is_dir($directory . DIRECTORY_SEPARATOR . $item))
+                    $this->recursiveProtectDirectory($directory . DIRECTORY_SEPARATOR . $item);
+            }
+
+            if(!file_exists("$directory" . DIRECTORY_SEPARATOR . ".htaccess")) {
+                file_put_contents("$directory" . DIRECTORY_SEPARATOR . ".htaccess", 'Deny from all');
+            }
+        }
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getDirectoryNames(): array
+    {
+        return $this->directoryNames;
     }
 }

@@ -36,19 +36,22 @@ namespace Skyline\Compiler\Factory;
 
 
 use Skyline\Compiler\Predef\DirectoryProtectionCompiler;
+use Skyline\Compiler\CompilerConfiguration as CC;
 
-class CompleteCompilersFactory extends AbstractFactoryFactory
+class DirectoryProtectionCompilerFactory extends AbstractExtendedCompilerFactory
 {
-    protected function getFactoryClassNames(): array
+    protected function getCompilerDescriptions(): array
     {
         return [
-            BasicCompilersFactory::class,
-            ConfigMainCompilerFactory::class,
-            ConfigParameterCompilerFactory::class,
-            ConfigPluginsCompilterFactory::class,
-            CreateHTAccessCompilerFactory::class,
-            SkylineEntryPointCompilerFactory::class,
-            DirectoryProtectionCompiler::class
+            'create-directories' => [
+                self::COMPILER_CLASS_KEY => DirectoryProtectionCompiler::class,
+                self::COMPILER_ARGUMENTS_KEY => [
+                    'directoryNames' => [
+                        CC::get([], CC::SKYLINE_APP_DATA_DIR),
+                        'vendor'
+                    ]
+                ]
+            ]
         ];
     }
 }
