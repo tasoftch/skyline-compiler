@@ -445,6 +445,12 @@ class CompilerContext
                 $parameters = require $this->getSkylineAppDirectory( CompilerConfiguration::SKYLINE_DIR_COMPILED ) . DIRECTORY_SEPARATOR . $p;
                 foreach($parameters as $parameterName => $parameterValue)
                     $serviceManager->setParameter($parameterName, $parameterValue);
+
+                $serviceManager->addCustomArgumentHandler(function($key, $value) {
+                    if(is_string($value) && strpos($value, '$(') !== false)
+                        return SkyGetPath($value, false);
+                    return $value;
+                }, "LOCATIONS");
             } else {
                 throw new \Exception("Using Service Manager is only available after compiling main config and parameter config");
             }
