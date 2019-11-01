@@ -154,7 +154,7 @@ class SkylineEntryPointFileCompiler extends AbstractCompiler
 
 use $APP_CLASS as Application;
 use $BOOTSTRAP_CLASS as Bootstrap;
-use Skyline\Application\Service\CORSService as CORS;
+use Skyline\Kernel\Service\CORSService as CORS;
 
 define("SKY_DEBUG", $DEBUG);
 define("SKY_TEST", $TEST);
