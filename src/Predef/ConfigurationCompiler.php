@@ -142,10 +142,8 @@ class ConfigurationCompiler extends AbstractCompiler
      * @param CompilerContext $context
      */
     protected function compileConfiguration(Traversable $source, string $target, CompilerContext $context) {
-        $compiler = new StandardFactoryCompiler();
+        $compiler = new StandardFactoryCompiler($target);
         $compiler->setSource($source);
-
-        $compiler->setTarget($target);
         $compiler->compile();
     }
 
