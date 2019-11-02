@@ -49,6 +49,7 @@ class ConfigMainCompilerFactory extends AbstractExtendedCompilerFactory
                 ConfigurationCompiler::INFO_CUSTOM_FILENAME_KEY     => 'default.config.php',
                 ConfigurationCompiler::INFO_DEV_FILENAME_KEY        => "default.config.dev.php",
                 ConfigurationCompiler::INFO_TEST_FILENAME_KEY       => "default.config.test.php",
+                ConfigurationCompiler::INFO_EXCLUDE_PATTERN         => '/Compiled\/.*?.config\.php$/i',
                 self::COMPILER_DEPENDENCIES_KEY => [
                     'composer-packages-order'
                 ]

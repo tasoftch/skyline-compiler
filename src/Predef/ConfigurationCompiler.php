@@ -59,6 +59,7 @@ class ConfigurationCompiler extends AbstractCompiler
     const INFO_CUSTOM_FILENAME_KEY = 'default';
     const INFO_DEV_FILENAME_KEY = 'dev';
     const INFO_TEST_FILENAME_KEY = 'test';
+    const INFO_EXCLUDE_PATTERN = 'exclude';
 
 
     public function compile(CompilerContext $context)
@@ -94,6 +95,8 @@ class ConfigurationCompiler extends AbstractCompiler
 
         foreach($this->yieldConfigurationFiles($context) as $file) {
             $file = (string) $file;
+            if(($ptrn = $this->info[ static::INFO_EXCLUDE_PATTERN ]) && preg_match($ptrn, $file))
+                continue;
             $addFile($file);
         }
 
