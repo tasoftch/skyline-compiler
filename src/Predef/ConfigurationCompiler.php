@@ -95,7 +95,7 @@ class ConfigurationCompiler extends AbstractCompiler
 
         foreach($this->yieldConfigurationFiles($context) as $file) {
             $file = (string) $file;
-            if(($ptrn = $this->info[ static::INFO_EXCLUDE_PATTERN ]) && preg_match($ptrn, $file))
+            if(($ptrn = $this->info[ static::INFO_EXCLUDE_PATTERN ] ?? "") && preg_match($ptrn, $file))
                 continue;
             $addFile($file);
         }
