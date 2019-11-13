@@ -43,7 +43,7 @@ class DirectoryProtectionCompilerFactory extends AbstractExtendedCompilerFactory
     protected function getCompilerDescriptions(): array
     {
         return [
-            'create-directories' => [
+            'protect-directories' => [
                 self::COMPILER_CLASS_KEY => DirectoryProtectionCompiler::class,
                 self::COMPILER_ARGUMENTS_KEY => [
                     'directoryNames' => [
