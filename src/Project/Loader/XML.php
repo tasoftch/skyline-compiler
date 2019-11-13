@@ -43,6 +43,7 @@ use Skyline\Compiler\Project\Attribute\Attribute;
 use Skyline\Compiler\Project\Attribute\CompilerContextParameterCollection;
 use Skyline\Compiler\Project\Attribute\FilterAttribute;
 use Skyline\Compiler\Project\Attribute\FilterConditionAttribute;
+use Skyline\Compiler\Project\Attribute\HostAttribute;
 
 class XML extends AbstractFileLoader
 {
@@ -131,12 +132,17 @@ class XML extends AbstractFileLoader
 
             foreach($hosts as $host) {
                 $name = (string)$host["name"];
+                $label = (string)$host["label"];
+                $cred = false;
+                if($host["credentials"] == 'yes')
+                    $cred = true;
+
                 $accepts = [];
                 foreach($host->accepts as $acc) {
                     $accepts[] = (string) $acc;
                 }
 
-                yield new Attribute($name, $accepts);
+                yield new HostAttribute($name, $accepts, $cred, $label);
             }
         }
     }

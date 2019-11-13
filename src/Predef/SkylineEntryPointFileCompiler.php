@@ -40,6 +40,7 @@ use Skyline\Compiler\CompilerContext;
 use Skyline\Compiler\Project\Attribute\AttributeCollection;
 use Skyline\Compiler\Project\Attribute\AttributeInterface;
 use Skyline\Compiler\Project\Attribute\FilterConditionAttribute;
+use Skyline\Compiler\Project\Attribute\HostAttribute;
 use Skyline\Compiler\Project\ProjectInterface;
 use Skyline\Kernel\Bootstrap;
 use TASoft\Util\PathTool;
@@ -87,13 +88,19 @@ class SkylineEntryPointFileCompiler extends AbstractCompiler
         $hosts = $context->getProject()->getAttribute(AttributeInterface::HOSTS_ATTR_NAME);
         $CORS = "";
         if($hosts instanceof AttributeCollection) {
-            $accept = function($host, $remote) use (&$CORS) {
-                $host = var_export($host, true);
-                $remote = var_export($remote, true);
+            $accept = function($host, $remote = "", $cred = false, $label = "") use (&$CORS) {
+                $args = [ var_export($host, true) ];
+                if($remote || $cred || $label)
+                    $args[] = var_export($remote, true);
+                if($cred || $label)
+                    $args[] = var_export($cred, true);
+                if($label)
+                    $args[] = var_export($label, true);
 
-                $CORS .= "CORS::registerHost($host, $remote);\n";
+                $CORS .= sprintf("CORS::registerHost(".implode(", ", array_fill(0, count($args), "%s")).")", ...$args);
             };
 
+            /** @var HostAttribute $attribute */
             foreach($hosts->getAttributes() as $attribute) {
                 $host = $attribute->getName();
                 $acceptsFrom = $attribute->getValue();
