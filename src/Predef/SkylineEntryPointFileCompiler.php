@@ -97,25 +97,23 @@ class SkylineEntryPointFileCompiler extends AbstractCompiler
                 if($label)
                     $args[] = var_export($label, true);
 
-                $CORS .= sprintf("CORS::registerHost(".implode(", ", array_fill(0, count($args), "%s")).")", ...$args);
+                $CORS .= sprintf("CORS::registerHost(".implode(", ", array_fill(0, count($args), "%s")).");\n", ...$args);
             };
 
             /** @var HostAttribute $attribute */
             foreach($hosts->getAttributes() as $attribute) {
                 $host = $attribute->getName();
                 $acceptsFrom = $attribute->getValue();
+                $cred = $attribute->useCredentials();
+                $label = $attribute->getLabel();
 
-                if(is_array($acceptsFrom)) {
-                    if($acceptsFrom) {
-                        foreach ($acceptsFrom as $acc) {
-                            $accept($host, $acc);
-                        }
-                    } else {
-                        $CORS .= sprintf("CORS::registerHost(%s);\n", var_export($host, true));
-                    }
-                } else {
-                    $accept($host, $acceptsFrom);
-                }
+                if(is_array($acceptsFrom) && $acceptsFrom) {
+                    foreach($acceptsFrom as $acc)
+                        $accept($host, $acc, $cred, $label);
+                } elseif($acceptsFrom)
+                    $accept($host, $acceptsFrom, $cred, $label);
+                else
+                    $accept($host, "", $cred, $label);
             }
         }
 
