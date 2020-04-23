@@ -2,7 +2,6 @@
   "name": "skyline/compiler",
   "license": "BSD-3-Clause",
   "description": "The compiler package allows you to manually edit the source files and compile them to a bootable structure, so any Skyline Application is able to boot from that compilation.",
-  "minimum-stability": "dev",
   "authors": [
     {
       "name": "Thomas Abplanalp",
@@ -19,14 +18,13 @@
     "ext-libxml": "*",
     "ext-simplexml": "*",
     "ext-json": "*",
-    "tasoft/service-manager": "dev-master",
-    "tasoft/config": "dev-master",
-    "tasoft/tools-path": "dev-master",
-    "skyline/kernel": "dev-master",
-    "symfony/filesystem": "dev-master"
+    "tasoft/service-manager": "^2.2",
+    "tasoft/config": "^3",
+    "tasoft/tools-path": "^1.5",
+    "skyline/kernel": "^0.1",
+    "symfony/filesystem": "5.0.7"
   },
   "require-dev": {
-    "phpunit/phpunit": "^6",
-    "skyline/modules": "dev-master"
+    "phpunit/phpunit": "^6"
   }
 }
