@@ -39,11 +39,11 @@ use Generator;
 use Skyline\Compiler\CompilerContext;
 use Skyline\Compiler\Exception\ProjectLoaderException;
 use SimpleXMLElement;
-use Skyline\Compiler\Project\Attribute\Attribute;
 use Skyline\Compiler\Project\Attribute\CompilerContextParameterCollection;
 use Skyline\Compiler\Project\Attribute\FilterAttribute;
 use Skyline\Compiler\Project\Attribute\FilterConditionAttribute;
 use Skyline\Compiler\Project\Attribute\HostAttribute;
+use Skyline\Compiler\Project\Attribute\SearchPathAttribute;
 
 class XML extends AbstractFileLoader
 {
@@ -114,6 +114,30 @@ class XML extends AbstractFileLoader
     protected function yieldSearchPaths(): Generator
     {
         if($searchPaths = $this->XML->searchPaths->dir) {
+			$vendors = [];
+			if(is_dir("vendor")) {
+				if($vdr = (string)$this->XML->searchPaths["vendor"]) {
+					$vendorAll = [
+						SearchPathAttribute::SEARCH_PATH_CLASSES,
+						SearchPathAttribute::SEARCH_PATH_CONFIG,
+						SearchPathAttribute::SEARCH_PATH_MODULES,
+						SearchPathAttribute::SEARCH_PATH_TEMPLATES,
+						SearchPathAttribute::SEARCH_PATH_USER_CONFIG
+					];
+
+					if($vdr == 'all') {
+						$vendors = $vendorAll;
+					} else {
+						$vdr = preg_split("/[,\s]+/i", $vdr);
+						$vendors = array_intersect($vendorAll, $vdr);
+					}
+				}
+			}
+
+			foreach($vendors as $vendor) {
+				yield $vendor => 'vendor';
+			}
+
             foreach($searchPaths as $path) {
                 $type = (string)$path["type"];
                 $value = (string)$path;
