@@ -123,7 +123,8 @@ return $data;
 }, $modules);";
 			} else
 				$data = "<?php\n$comment\nreturn $data;";
-		}
+		} else
+			$data = "<?php\n$comment\nreturn $data;";
 
 		return $data;
 	}
