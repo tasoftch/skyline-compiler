@@ -101,13 +101,18 @@ class ConfigurationCompiler extends AbstractCompiler
         }
 
         if($defaultFile = $this->info[ static::INFO_CUSTOM_FILENAME_KEY ] ?? NULL) {
-            foreach($context->getProjectSearchPaths(SearchPathAttribute::SEARCH_PATH_USER_CONFIG) as $configPath) {
-                if(is_file($f = "$configPath/$defaultFile")) {
-                    $context->getLogger()->logText("DEFAULT for %s: %s", LoggerInterface::VERBOSITY_VERY_VERBOSE, NULL, $this->getCompilerID(), $f);
-                    $addFile($f, true);
-                    break;
-                }
-            }
+			if(is_string($defaultFile))
+				$defaultFile = [$defaultFile];
+
+			foreach($defaultFile as $defFile) {
+				foreach($context->getProjectSearchPaths(SearchPathAttribute::SEARCH_PATH_USER_CONFIG) as $configPath) {
+					if(is_file($f = "$configPath/$defFile")) {
+						$context->getLogger()->logText("DEFAULT for %s: %s", LoggerInterface::VERBOSITY_VERY_VERBOSE, NULL, $this->getCompilerID(), $f);
+						$addFile($f, true);
+						break;
+					}
+				}
+			}
         }
 
         if(CC::get($context->getConfiguration(), CC::COMPILER_DEBUG) && ($defaultFile = $this->info[ static::INFO_DEV_FILENAME_KEY ] ?? NULL)) {

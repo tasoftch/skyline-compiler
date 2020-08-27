@@ -264,7 +264,7 @@ class CompilerContext
             $depCollection = new DependencyCollection(false);
             $depCollection->setAcceptsDuplicates(false);
 
-            foreach($this->compilers as $compiler) {
+            foreach($this->getCompilers() as $compiler) {
                 if($compiler instanceof CompilerInterface) {
                     $id = $compiler->getCompilerID();
                     $deps = $compiler->getDependsOnCompilerIDs();
@@ -282,6 +282,10 @@ class CompilerContext
         }
         return $this->orderedCompilers;
     }
+
+    public function getCompilers() {
+    	return $this->compilers;
+	}
 
     /**
      * Main compile command.
@@ -319,8 +323,10 @@ class CompilerContext
                 if(!$validator || $validator($compiler))
                     $compiler->compile($this);
             }
+            return true;
         } catch (Throwable $throwable) {
             $this->getLogger()->logException($throwable);
+            return false;
         } finally {
             restore_error_handler();
             self::$currentCompiler = NULL;

@@ -97,7 +97,7 @@ class CreateDirectoriesCompiler extends AbstractCompiler
         $dn = explode(getcwd(), $dirName)[1] ?? $dirName;
 
         if(@mkdir($dirName)) {
-            $logger->logText("Created directory <fg=green>%s</>", LoggerInterface::VERBOSITY_NORMAL, NULL, $dn);
+            $logger->logText("Created directory <fg=green>%s</>", LoggerInterface::VERBOSITY_VERBOSE, NULL, $dn);
         } else {
             $logger->logWarning("Creating directory $dn failed");
         }
