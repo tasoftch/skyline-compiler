@@ -50,6 +50,7 @@ class XMLProjectTest extends TestCase
      */
     public function testProjectWithoutClass() {
         $xml = new XML(__DIR__ . "/Projects/class-less-project.xml");
+		$this->expectException(\Skyline\Compiler\Exception\BadConfigurationException::class);
         $xml->getProject();
     }
 
@@ -58,6 +59,7 @@ class XMLProjectTest extends TestCase
      */
     public function testProjectWithoutRoot() {
         $xml = new XML(__DIR__ . "/Projects/root-less-project.xml");
+		$this->expectException(\Skyline\Compiler\Exception\BadConfigurationException::class);
         $xml->getProject();
     }
 

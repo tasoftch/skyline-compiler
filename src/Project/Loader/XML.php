@@ -217,7 +217,7 @@ class XML extends AbstractFileLoader
 
                     $cond = new FilterConditionAttribute($name, (string) $child, $bank);
 
-                    $mods = explode(" ", $child["mode"]);
+                    $mods = explode(" ", $child["mode"] ?: "");
                     $modifiers = 0;
                     foreach($mods as $mod) {
                         if($mod) {

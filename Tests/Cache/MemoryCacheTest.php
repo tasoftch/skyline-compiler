@@ -60,6 +60,7 @@ class MemoryCacheTest extends TestCase
      */
     public function testNonexistingFileChanged() {
         $cache = new MemoryCache();
+		$this->expectException(\Skyline\Compiler\Exception\FileOrDirectoryNotFoundException::class);
         $cache->set("Tests/Cache/MemoryCacheTestingFileThatDoesNotExist.php", 12);
     }
 
