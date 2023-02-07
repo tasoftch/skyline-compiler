@@ -21,7 +21,7 @@
     "tasoft/service-manager": "^2.2",
     "tasoft/config": "^8",
     "tasoft/tools-path": "^1.5",
-    "skyline/kernel": "^0.9",
+    "skyline/kernel": "^8",
     "symfony/filesystem": "^6"
   },
   "require-dev": {
