@@ -45,7 +45,7 @@ class ValueCache implements ValueCacheInterface, Countable
     /**
      * @inheritDoc
      */
-    public function count()
+    public function count(): int
     {
         $count = 0;
         foreach($this->cache as $c) {
