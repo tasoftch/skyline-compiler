@@ -74,35 +74,35 @@ class ModuleStorageHelper implements ArrayAccess, Countable
 		return $this->modules;
 	}
 
-	public function offsetExists($offset)
+	public function offsetExists($offset): bool
 	{
 		if($module = $this->getCurrentModule())
 			return isset($this->modules[$module][$offset]);
 		return isset($this->storage[$offset]);
 	}
 
-	public function &offsetGet($offset)
+	public function &offsetGet($offset): mixed
 	{
 		if($module = $this->getCurrentModule())
 			return $this->modules[$module][$offset];
 		return $this->storage[$offset];
 	}
 
-	public function offsetSet($offset, $value)
+	public function offsetSet($offset, $value): void
 	{
 		if($module = $this->getCurrentModule())
 			$this->modules[$module][$offset] = $value;
 		$this->storage[$offset] = $value;
 	}
 
-	public function offsetUnset($offset)
+	public function offsetUnset($offset): void
 	{
 		if($module = $this->getCurrentModule())
 			unset( $this->modules[$module][$offset] );
 		unset( $this->storage[$offset] );
 	}
 
-	public function count()
+	public function count(): int
 	{
 		if($module = $this->getCurrentModule())
 			return count( $this->modules[$module] );
